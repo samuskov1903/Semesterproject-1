@@ -1,6 +1,5 @@
 from time import sleep
 from math import pi
-import stepper_motor
 class differentieldrive :
     def __init__(self, left, right,wheel_dia):
         self.motorleft = left
