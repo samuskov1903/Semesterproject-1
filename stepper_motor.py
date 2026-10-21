@@ -36,7 +36,7 @@ class StepperMotor:
         # 1. Hvis man sender et tal (f.eks. motor.set_step_mode(4))
         if isinstance(mode, int):
             seq_name = f"micro_{mode}"
-            self.modes[seq_name] = self.generate_microstep_sequence(mode)
+            self.modes[seq_name] = list(reversed(self.generate_microstep_sequence(mode)))
             self.current_mode = seq_name
             self.step_index = 0
             
