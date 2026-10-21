@@ -2,43 +2,25 @@
 
 from time import sleep
 from stepper_motor import StepperMotor
-
+from Differential_drive import differentieldrive
 led_pins = [16, 17, 18, 19]
 
-motor1_pins = [0, 1, 2, 3]
-motor2_pins = [4, 5, 6, 7]
+leftmotor_pins = [0, 1, 2, 3]
+rightmotor_pins = [4, 5, 6, 7]
 
-motor1 = StepperMotor(motor1_pins, pwm_pct=0.35)
-motor2 = StepperMotor(motor2_pins, pwm_pct=0.35)
+motorleft = StepperMotor(leftmotor_pins, pwm_pct=0.35)
+motorright = StepperMotor(rightmotor_pins, pwm_pct=0.35)
 
-motor1.set_step_mode("half") # "full" for full step. "half" for half step og et nummer uden "" for micro
-motor2.set_step_mode("half") # "full" for full step. "half" for half step og et nummer uden "" for micro
-print(f"Skridt FØR bevægelse: {motor1.total_steps}") 
+motorleft.set_step_mode("full") # "full" for full step. "half" for half step og et nummer uden "" for micro
+motorright.set_step_mode("full") # "full" for full step. "half" for half step og et nummer uden "" for micro
+print(f"Skridt FØR bevægelse: {motorleft.total_steps}") 
 
+robot = differentieldrive(motorleft, motorright)
+    
+robot.turn_on_wheel_robot_steps(1153, "left", 0.02)
 
-def move_robot(steps, direction="forward", delay=0.01):
-    i = 0
-    n = 0
-    motor1.sequence = motor1.modes[motor1.current_mode]
-    motor2.sequence = motor2.modes[motor2.current_mode]
-    if direction == "backward":
-        motor1.sequence = list(reversed(motor1.sequence))
-        motor2.sequence = list(reversed(motor2.sequence))
-    try:
-        for i in range(steps):
-            motor1.set_step(motor1.sequence[n])
-            motor2.set_step(motor2.sequence[n])
-            if n >= len(motor1.sequence) - 1:
-                n = 0
-            else:
-                n = n+1
-            sleep(delay)
-    finally :
-        motor1.stop()
-        motor2.stop()
+ #ændre værdierne til de ønskede værdier til bevægelsen
 
-move_robot(200, direction="forward", delay=0.01) #ændre værdierne til de ønskede værdier til bevægelsen
-
-print(f"Skridt efter første bevægelse: {motor1.total_steps}") #husk at ændre ordet "første" til "anden" til vis du laver en ny bevægelse
+print(f"Skridt efter første bevægelse: {motorleft.total_steps}") #husk at ændre ordet "første" til "anden" til vis du laver en ny bevægelse
 
 #hvis der skal være 2 bevægelser så kopier linje 14-16 og ændre værdiene til de ønskede værdier til næste bevægelse
