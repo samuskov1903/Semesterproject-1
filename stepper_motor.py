@@ -40,6 +40,7 @@ class StepperMotor:
             self.current_mode = seq_name
             self.step_index = 0
             
+            
         # 2. Hvis man vælger 'full' eller 'half'
         elif mode in self.modes:
             self.current_mode = mode

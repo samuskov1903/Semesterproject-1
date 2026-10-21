@@ -25,4 +25,4 @@ print(f"Skridt efter første bevægelse: {motorleft.total_steps}") #husk at ænd
 
 #hvis der skal være 2 bevægelser så kopier linje 14-16 og ændre værdiene til de ønskede værdier til næste bevægelse
 
-robot.move_dist(100,"forward")
+robot.move_dist(100,"forward", 0.02)

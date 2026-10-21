@@ -82,8 +82,10 @@ class differentieldrive :
             self.dist_cm = dist_cm
             
             revs_for_dist = self.dist_cm/(self.wheel_dia*pi)
-            steps_for_dist = revs_for_dist * len(self.motorright.current_mode)*50
-            
+            steps_for_dist = revs_for_dist * len(self.motorright.modes[self.motorright.current_mode])*50
+            print(self.motorright.current_mode)
+            print(steps_for_dist)
+            print(len(self.motorright.modes[self.motorright.current_mode]))
             return steps_for_dist
 
     def move_dist(self, distance_cm, direction, delay=0.01):
