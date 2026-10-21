@@ -1,8 +1,12 @@
 from time import sleep
+from math import pi
+import stepper_motor
 class differentieldrive :
-    def __init__(self, left, right) :
+    def __init__(self, left, right,wheel_dia):
         self.motorleft = left
         self.motorright = right
+        self.wheel_dia = wheel_dia
+        steps_pr_rev = 200*len(self.current_mode)
     def stop(self):
         self.motorleft.stop()
         self.motorright.stop()
@@ -75,4 +79,16 @@ class differentieldrive :
                 sleep(delay)
         finally :
             self.stop()
-        
+            
+        def cm_to_steps(self, dist_cm):
+                self.dist_cm = dist_cm
+                
+                revs_for_dist = self.dist_cm/(self.wheel_dia*pi)
+                steps_for_dist = revs_for_dist * len(self.motorright.sequence)*50
+                
+                return steps_for_dist
+
+        def move_distance(self, distance_cm, direction, delay=0.01):
+            steps = self.cm_to_steps(distance_cm)
+            self.drive_robot_steps(steps, direction, delay)
+            self.stop()
