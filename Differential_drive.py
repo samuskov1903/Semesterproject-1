@@ -132,8 +132,18 @@ class differentieldrive :
             self.motorright.sequence = list(reversed(self.motorright.sequence))            
         elif direction == "left" :
             self.motorleft.sequence = list(reversed(self.motorleft.sequence)) 
-        self.drive_robot_steps(steps,direction,delay)
-
+        try:
+            for i in range(steps):
+                self.motorleft.set_step(self.motorleft.sequence[n])
+                self.motorright.set_step(self.motorright.sequence[n])
+                if n >= len(self.motorleft.sequence) - 1:
+                    n = 0
+                else:
+                    n = n+1
+                sleep(delay)
+        finally :
+            self.stop()
+            
     def drive_robot_steps(self, steps, direction="forward", delay=0.01) : # Drive both motors for a specified number of steps.
         # Load the step sequences selected for the two motors.
         self.motorleft.sequence = self.motorleft.modes[self.motorleft.current_mode]
