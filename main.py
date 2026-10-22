@@ -18,8 +18,8 @@ motorright.set_step_mode("half") # "full" for full step. "half" for half step og
 robot = differentieldrive(motorleft, motorright, 8.6)
 
 sleep(2)
-for i in range(4)
-    robot.move_dist(100,"forward", 0.02)
+for i in range(4):
+    robot.move_dist(10,"forward", 0.02)
     sleep(1)
     robot.turn_on_point_robot_angle(90, "left", 0.02)
     sleep(1)
