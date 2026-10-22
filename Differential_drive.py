@@ -11,10 +11,12 @@ class differentieldrive :
     def stop(self):
         self.motorleft.stop()
         self.motorright.stop()    
-    def turn_on_wheel_robot_angle(self, angle, direction, delay, wheel_dia = 8.5, wheel_base= 24.5 ):
+    def turn_on_wheel_robot_angle(self, angle, direction, delay, wheel_base= 24.5 ):
+        self.motorleft.sequence = self.motorleft.modes[self.motorleft.current_mode]
+        self.motorright.sequence = self.motorright.modes[self.motorright.current_mode] 
         n = 0
         wheel_circmunfrence = wheel_base * math.pi
-        wheel_rev = wheel_circmunfrence/(wheel_dia * math.pi)
+        wheel_rev = wheel_circmunfrence/(self.wheel_dia * math.pi)
         step_360_degree = wheel_rev * 50 * len(self.motorleft.sequence)
         step_1_degree = step_360_degree/360
         steps = angle*step_1_degree * 2
@@ -43,18 +45,15 @@ class differentieldrive :
                     sleep(delay)
             finally :
                 self.stop()         
-    def turn_on_point_robot_angle(self, angle, direction, delay=0.02, wheel_dia = 8.5, wheel_base= 24.5):
+    def turn_on_point_robot_angle(self, angle, direction, delay=0.02, wheel_base= 25):
         n = 0
+        self.motorleft.sequence = self.motorleft.modes[self.motorleft.current_mode]
+        self.motorright.sequence = self.motorright.modes[self.motorright.current_mode] 
         wheel_circmunfrence = wheel_base * math.pi
-        print(wheel_circmunfrence)
-        wheel_rev = wheel_circmunfrence/(wheel_dia*math.pi)
-        print(wheel_rev)
+        wheel_rev = wheel_circmunfrence/(self.wheel_dia*math.pi)
         step_360_degree = wheel_rev*50*len(self.motorleft.sequence)
-        print(step_360_degree)
         step_1_degree = step_360_degree/360
-        print(step_1_degree)
-        steps = angle*step_1_degree   
-        print(steps)  
+        steps = angle*step_1_degree     
         if direction == "right" :
             self.motorright.sequence = list(reversed(self.motorright.sequence))            
         elif direction == "left" :
@@ -73,6 +72,8 @@ class differentieldrive :
     def turn_on_wheel_robot_steps(self, steps, direction, delay) :
         i = 0
         n = 0
+        self.motorleft.sequence = self.motorleft.modes[self.motorleft.current_mode]
+        self.motorright.sequence = self.motorright.modes[self.motorright.current_mode] 
         if direction == "left" :
             self.motorright.sequence = self.motorright.modes[self.motorright.current_mode] 
             try:
@@ -98,6 +99,9 @@ class differentieldrive :
             finally :
                 self.stop()
     def turn_on_point_robot_steps(self, steps, direction, delay) :
+        self.motorleft.sequence = self.motorleft.modes[self.motorleft.current_mode]
+        self.motorright.sequence = self.motorright.modes[self.motorright.current_mode] 
+
         i = 0
         n = 0
         if direction == "right" :
@@ -117,6 +121,8 @@ class differentieldrive :
             self.stop()
 
     def drive_robot_steps(self, steps, direction="forward", delay=0.01) :
+        self.motorleft.sequence = self.motorleft.modes[self.motorleft.current_mode]
+        self.motorright.sequence = self.motorright.modes[self.motorright.current_mode] 
         i = 0
         n = 0
         if direction == "backward":

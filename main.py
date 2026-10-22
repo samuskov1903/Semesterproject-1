@@ -17,19 +17,25 @@ motorright.set_step_mode("half") # "full" for full step. "half" for half step og
 print(f"Skridt FØR bevægelse: {motorleft.total_steps}") 
 
 robot = differentieldrive(motorleft, motorright, 8.6)
-    
-#robot.turn_on_wheel_robot_steps(1153, "left", 0.02)
-motorleft.set_step_mode("full") # "full" for full step. "half" for half step og et nummer uden "" for micro
-motorright.set_step_mode("full") # "full" for full step. "half" for half step og et nummer uden "" for micro
 
-print(f"Skridt FØR bevægelse: {motorleft.total_steps}") 
+sleep(2)
 
-robot = differentieldrive(motorleft, motorright, 8.6)
-
-
-for i in range(4):
-    robot.move_dist(100,"forward", 0.02)
-    robot.turn_on_point_robot_angle(90, "left", 0.02)
+robot.move_dist(100,"forward", 0.02)
+sleep(1)
+robot.turn_on_point_robot_angle(90, "left", 0.02)
+sleep(1)
+robot.move_dist(100,"forward", 0.02)
+sleep(1)
+robot.turn_on_point_robot_angle(90, "left", 0.02)
+sleep(1)
+robot.move_dist(100,"forward", 0.02)
+sleep(1)
+robot.turn_on_point_robot_angle(90, "left", 0.02)
+sleep(1)
+robot.move_dist(100,"forward", 0.02)
+sleep(1)
+robot.turn_on_point_robot_angle(90, "left", 0.02)
+sleep(1)
 
 
  #ændre værdierne til de ønskede værdier til bevægelsen
