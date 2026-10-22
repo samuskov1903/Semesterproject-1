@@ -43,7 +43,7 @@ class differentieldrive :
                     sleep(delay)
             finally :
                 self.stop()         
-    def turn_on_point_robot_angle(self, angle, direction, delay, wheel_dia = 8.5, wheel_base= 24.5):
+    def turn_on_point_robot_angle(self, angle, direction, delay=0.02, wheel_dia = 8.5, wheel_base= 24.5):
         n = 0
         wheel_circmunfrence = wheel_base * math.pi
         print(wheel_circmunfrence)
@@ -137,7 +137,7 @@ class differentieldrive :
     def cm_to_steps(self, dist_cm):
             self.dist_cm = dist_cm
             
-            revs_for_dist = self.dist_cm/(self.wheel_dia*pi)
+            revs_for_dist = self.dist_cm/(self.wheel_dia*math.pi)
             steps_for_dist = revs_for_dist * len(self.motorright.modes[self.motorright.current_mode])*50
             print(self.motorright.current_mode)
             print(steps_for_dist)
