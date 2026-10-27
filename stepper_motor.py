@@ -73,6 +73,8 @@ class StepperMotor:
             for i in range(steps):
                 step = sequence[i % len(sequence)]
                 self.set_step(step)
+                if delay > 0:
+                    sleep(delay)
             if direction == "forward":
                 self.total_steps += steps
             else:
