@@ -1,10 +1,16 @@
 from machine import ADC
-
-adc = ADC(28)
-
+from time import sleep
 
 
-while True:
+class sensors:
+    def __init__(self, pin):
+        self.pin = pin
+
+        self.reading_Pin = ADC(self.pin)
+        
+    def reading(self, interval): #interval how many times a second
+        while True:
     
-    reading = adc.read_u16()
-    print(reading)
+            reading = self.reading_Pin.read_u16()
+            sleep(1/interval)
+            print(reading)
