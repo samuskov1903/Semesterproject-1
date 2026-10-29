@@ -12,3 +12,6 @@ venv/
 
 # VS Code settings
 .vscode/
+
+# Local files
+temp_main.py
