@@ -149,7 +149,6 @@ class differentieldrive :
         # Load the step sequences selected for the two motors.
         self.motorleft.sequence = self.motorleft.modes[self.motorleft.current_mode]
         self.motorright.sequence = self.motorright.modes[self.motorright.current_mode] 
-        i = 0
         n = 0
         if direction == "backward":
             # Reverse both sequences to drive backward.
@@ -178,6 +177,6 @@ class differentieldrive :
 
     def move_dist(self, distance_cm, direction, delay=0.01): # Move a specified distance in the requested direction.
         # Convert the distance to motor steps, then drive both wheels.
-        steps = self.cm_to_steps(distance_cm)
+        steps = round(self.cm_to_steps(distance_cm))
         self.drive_robot_steps(steps, direction, delay)
         self.stop()
