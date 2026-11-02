@@ -127,7 +127,6 @@ class differentieldrive :
 
     def turn_on_point_robot_steps(self, steps, direction, delay) : # Turn the robot in place for a specified number of steps.
         
-        i = 0
         n = 0
         if direction == "right" :
             self.motorright.sequence = list(reversed(self.motorright.sequence))            
@@ -149,6 +148,7 @@ class differentieldrive :
         # Load the step sequences selected for the two motors.
         self.motorleft.sequence = self.motorleft.modes[self.motorleft.current_mode]
         self.motorright.sequence = self.motorright.modes[self.motorright.current_mode] 
+        i = 0
         n = 0
         if direction == "backward":
             # Reverse both sequences to drive backward.
