@@ -29,16 +29,16 @@ class Sensor:
         return self.surface
     
     def read_cont_bin(self, interval, switch, threshold):
-        while True:
+        while self.running:
             self.bin_read(switch, threshold)
             sleep(1/interval)
             
     def read_cont_bin_led(self, interval, switch, threshold):
         pin = Pin("LED", Pin.OUT)
-        while True:
-                    self.bin_read(switch, threshold)
-                    if self.surface == 1:
-                        pin.on()
-                    elif self.surface == 0:
-                        pin.off()
-                    sleep(1/interval)
+        while self.running:
+            self.bin_read(switch, threshold)
+            if self.surface == 1:
+                pin.on()
+            elif self.surface == 0:
+                pin.off()
+            sleep(1/interval)

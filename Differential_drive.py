@@ -11,7 +11,7 @@ class differentieldrive :
         self.wheel_dia = wheel_dia
         self.wheel_base = wheel_base
         self.wheel_circumfrence = self.wheel_base * math.pi
-        self.wheel_rev = self.wheel_circrumfrence/(self.wheel_dia*math.pi)
+        self.wheel_rev = self.wheel_circumfrence/(self.wheel_dia*math.pi)
 
 
     def stop(self):
