@@ -39,12 +39,13 @@ from time import sleep
 
 
 sensor_pin = 28
+sensor_led_pin = 27
 led_pins = [16, 17, 18, 19]
 leftmotor_pins = [0, 1, 2, 3]
 rightmotor_pins = [4, 5, 6, 7]
 
 # Create the sensor
-ldr = Sensor(sensor_pin)
+ldr = Sensor(sensor_pin, sensor_led_pin)
 # Create the two motors with their four control pins and PWM power level.
 motorleft = StepperMotor(leftmotor_pins, pwm_pct=0.2)
 motorright = StepperMotor(rightmotor_pins, pwm_pct=0.2)
@@ -54,9 +55,7 @@ motorleft.set_step_mode("half")
 motorright.set_step_mode("half")
 
 # Create the differential drive using both motors and the wheel diameter.
-robot = differentieldrive(motorleft, motorright, 8.6, 24.5)
-
-
+robot = differentieldrive(motorleft, motorright, 8.6)
     
 
 # Starting thread with sensor
