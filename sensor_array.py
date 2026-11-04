@@ -3,6 +3,7 @@ from sensor import Sensor
 class sensor_array:
     def __init__(self, sensor_pins=[],led_pins=[]):
         self.sensors =[Sensor(pin) for pin in sensor_pins]
+        self.leds = [light_led("on")]
 
             
     def read(self):
@@ -13,3 +14,5 @@ class sensor_array:
             sensor.bin_read(switch, threshold)
             for sensor in self.sensors
         ]
+        
+    
