@@ -1,10 +1,10 @@
 from sensor import Sensor
 from led import LED
 
-class sensor_array:
+class SensorArray:
     def __init__(self, sensor_pins=[],led_pins=[]):
         self.sensors =[Sensor(pin) for pin in sensor_pins]
-        self.leds = [led(pin) for pin in led_pins]
+        self.leds = [LED(pin) for pin in led_pins]
 
             
     def read(self):
