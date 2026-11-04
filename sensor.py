@@ -3,7 +3,7 @@ from time import sleep
 
 
 class Sensor:
-    def __init__(self, sensorpin, led):
+    def __init__(self, sensorpin, led=None):
         self.pin = sensorpin
         self.surface = 1 # Repræseter farven overfladen, 1 = hvid, 0 = Sort
         self.running = True
