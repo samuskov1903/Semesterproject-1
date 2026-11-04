@@ -60,12 +60,13 @@ robot = differentieldrive(motorleft, motorright, 8.6)
 
 # Starting thread with sensor
 #_thread.start_new_thread(ldr.read_cont_bin_led(10, 40000, 5000), ())
-_thread.start_new_thread(ldr.read_cont, (10,))
+_thread.start_new_thread(ldr.read_save_cont, ("log.txt", 10,))
 
-ldr.light_led("on")
-sleep(1)
-robot.turn_on_point_robot_angle(180, "left", 0.01)
-sleep(1)
-robot.turn_on_point_robot_angle(180, "right", 0.01)
-ldr.light_led("off")
-ldr.running = False
+try:
+    sleep(1)
+    robot.turn_on_point_robot_angle(180, "left", 0.01)
+    sleep(1)
+    robot.turn_on_point_robot_angle(180, "right", 0.01)
+finally:
+    ldr.running = False
+    robot.stop()
