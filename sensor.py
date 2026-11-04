@@ -48,8 +48,12 @@ class Sensor:
             log.write(data)
     
     def read_save_cont(self, file_name, interval):
+        with open(file_name, "w") as log:
+            pass
         while self.running:
-            data = self.read()
-            self.save_data(file_name, str(data) + "\n")
-            sleep(1/interval)
+                data = self.read()
+                print(data)
+                self.save_data(file_name, str(data) + "\n")
+                sleep(1/interval)
+                
             
