@@ -7,7 +7,7 @@ class Sensor:
         self.pin = sensorpin
         self.surface = 1 # Repræseter farven overfladen, 1 = hvid, 0 = Sort
         self.running = True
-        
+        self.reading_Pin = ADC(self.pin) # Laver ADC af sensor Pin
     def read(self):
             reading = self.reading_Pin.read_u16()
             return reading
@@ -55,12 +55,11 @@ class Sensor:
                 sleep(1/interval)
 
 class led:
-    def __init__(self, led_pins):
+    def __init__(self, led):
         self.running = True
         self.sensor_LED = led
         self.sensor_LED_pin = Pin(self.sensor_LED, Pin.OUT)
-        self.reading_Pin = ADC(self.pin) # Laver ADC af sensor Pin
-    def light_led(self, status) :
+    def light_led(self, status):
             if status == "on":
                 self.sensor_LED_pin.on()
             else :
