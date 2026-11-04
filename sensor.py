@@ -46,23 +46,12 @@ class Sensor:
             log.write(data)
     
     def read_save_cont(self, file_name, interval):
-        with open(file_name, "w") as log:
+        with open(file_name, "w"):
             pass
         while self.running:
                 data = self.read()
                 print(data)
                 self.save_data(file_name, str(data) + "\n")
                 sleep(1/interval)
-
-class led:
-    def __init__(self, led):
-        self.running = True
-        self.sensor_LED = led
-        self.sensor_LED_pin = Pin(self.sensor_LED, Pin.OUT)
-    def light_led(self, status):
-            if status == "on":
-                self.sensor_LED_pin.on()
-            else :
-                self.sensor_LED_pin.off()
         
             

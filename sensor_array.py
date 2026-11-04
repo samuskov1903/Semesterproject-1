@@ -1,4 +1,5 @@
-from sensor import Sensor, led
+from sensor import Sensor
+from led import LED
 
 class sensor_array:
     def __init__(self, sensor_pins=[],led_pins=[]):
@@ -14,5 +15,10 @@ class sensor_array:
             sensor.bin_read(switch, threshold)
             for sensor in self.sensors
         ]
-    def led_on():
-    
+    def led_status(self, status):
+        for led in self.leds:
+            if status == "on":
+                led.on()
+            else:
+                led.off()
+            
