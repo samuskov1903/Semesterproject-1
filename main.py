@@ -61,7 +61,7 @@ robot = differentieldrive(motorleft, motorright, 8.6, 24.5)
 
 # Starting thread with sensor
 #_thread.start_new_thread(ldr.read_cont_bin_led(10, 40000, 5000), ())
-_thread.start_new_thread(ldr.read_cont, (10,))
+_thread.start_new_thread(ldr.read_save_cont, ("log.txt", 10,))
 
     
 sleep(1)

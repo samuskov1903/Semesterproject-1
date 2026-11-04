@@ -2,7 +2,7 @@ from machine import Pin, PWM
 from time import sleep
 import math
 class StepperMotor:
-    def __init__(self, pins, pwm_pct=0.15, frequency=18_000):
+    def __init__(self, pins, pwm_pct=0.15, frequency=20_000):
 # Configure the four PWM outputs.
 # Store each step sequence under a separate mode name.
 # Keep track of the currently selected mode.

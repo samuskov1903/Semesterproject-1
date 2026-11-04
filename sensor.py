@@ -12,7 +12,7 @@ class Sensor:
         
     def read(self):
             reading = self.reading_Pin.read_u16()
-            print(reading)
+            return reading
             
     def read_cont(self, interval): #interval how many times a second
         while self.running:
@@ -42,3 +42,14 @@ class Sensor:
             elif self.surface == 0:
                 pin.off()
             sleep(1/interval)
+            
+    def save_data(self, file_name, data):
+        with open(file_name, "a") as log:
+            log.write(data)
+    
+    def read_save_cont(self, file_name, interval):
+        while self.running:
+            data = self.read()
+            self.save_data(file_name, str(data) + "\n")
+            sleep(1/interval)
+            
