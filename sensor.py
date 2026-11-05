@@ -1,5 +1,6 @@
 from machine import ADC, Pin
-from time import sleep
+from time import sleep, time
+import _thread
 
 
 class Sensor:
@@ -7,7 +8,11 @@ class Sensor:
         self.pin = sensorpin
         self.surface = 1 # Repræseter farven overfladen, 1 = hvid, 0 = Sort
         self.running = True
+        self.logging = False
+        self.log_thread_running = False
         self.reading_Pin = ADC(self.pin) # Laver ADC af sensor Pin
+        
+        
     def read(self):
             reading = self.reading_Pin.read_u16()
             return reading
@@ -53,3 +58,40 @@ class Sensor:
                 print(data)
                 self.save_data(file_name, str(data) + "\n")
                 sleep(1/interval)           
+                
+    def log_to_file(self, filename, direction, interval=10, batch_size=20):
+        self.log_thread_running = True
+        buffer = []
+
+        try:
+            with open(filename, "a") as log:
+                log.write("\n--- " + direction + " turn ---\n")
+
+                while self.running and self.logging:
+                    buffer.append(str(time()) + "," + str(self.read()))
+                    print(self.read)
+                    if len(buffer) >= batch_size:
+                        log.write("\n".join(buffer) + "\n")
+                        log.flush()
+                        buffer.clear()
+
+                    sleep(1 / interval)
+
+                if buffer:
+                    log.write("\n".join(buffer) + "\n")
+                    log.flush()
+        finally:
+            self.log_thread_running = False
+        
+    def record_turn(self, robot, direction, filename):
+        self.logging = True
+        _thread.start_new_thread(
+            self.log_to_file,
+            (filename, direction, 10, 100),
+        )
+
+        robot.turn_on_point_robot_angle(180, direction, 0.01)
+
+        self.logging = False
+        while self.log_thread_running:
+            sleep(0.01)

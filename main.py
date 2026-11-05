@@ -1,76 +1,42 @@
-#Hussein Mohamed Kleit   hukle26@student.sdu.dk
-'''
 from time import sleep
-from stepper_motor import StepperMotor
-from Differential_drive import differentieldrive
-
-# GPIO pins assigned to the LEDs and the left and right stepper motors.
-led_pins = [16, 17, 18, 19]
-leftmotor_pins = [0, 1, 2, 3]
-rightmotor_pins = [4, 5, 6, 7]
-
-# Create the two motors with their four control pins and PWM power level.
-motorleft = StepperMotor(leftmotor_pins, pwm_pct=0.2)
-motorright = StepperMotor(rightmotor_pins, pwm_pct=0.2)
-
-# Use half-stepping for smoother movement; "full" selects other mode.
-motorleft.set_step_mode("half")
-motorright.set_step_mode("half")
-
-# Create the differential drive using both motors and the wheel diameter.
-robot = differentieldrive(motorleft, motorright, 8.6, 24.5)
-
-# Allow the hardware a moment to initialize before moving.
-#sleep(2)
-# Drive a square: move forward 100cm, then turn 90 degrees left, four times.
-#robot.move_dist(5,"forward", 0.002)
-for i in range(4):
-    robot.move_dist(100,"forward", 0.01)
-    sleep(1)
-    robot.turn_on_point_robot_angle(90, "left", 0.01)
-    sleep(1)
-    
-    '''
-    
-    
-
 from sensor import Sensor
-from stepper_motor import StepperMotor
 from Differential_drive import differentieldrive
-import _thread
-from time import sleep
+from stepper_motor import StepperMotor
 
 
 sensor_pin = 28
-sensor_led_pin = 27
-led_pins = [16, 17, 18, 19]
 leftmotor_pins = [0, 1, 2, 3]
 rightmotor_pins = [4, 5, 6, 7]
+wheel_diameter = 8.6
+wheel_base = 24.5
+log_file = "turns.txt"
 
-# Create the sensor
-ldr = Sensor(sensor_pin, sensor_led_pin)
-# Create the two motors with their four control pins and PWM power level.
+
+ldr = Sensor(sensor_pin)
+
 motorleft = StepperMotor(leftmotor_pins, pwm_pct=0.2)
 motorright = StepperMotor(rightmotor_pins, pwm_pct=0.2)
-
-# Use half-stepping for smoother movement; "full" selects other mode.
 motorleft.set_step_mode("half")
 motorright.set_step_mode("half")
 
-# Create the differential drive using both motors and the wheel diameter.
-robot = differentieldrive(motorleft, motorright, 8.6, 24.5)
-    
+robot = differentieldrive(
+    motorleft,
+    motorright,
+    wheel_diameter,
+    wheel_base,
+)
 
-# Starting thread with sensor
-#_thread.start_new_thread(ldr.read_cont_bin_led(10, 40000, 5000), ())
-_thread.start_new_thread(ldr.read_save_cont, ("nøgen.txt", 10,))
 
-ldr.light_led("off")
 try:
+    with open(log_file, "w") as log:
+        log.write("Sensor recordings\n")
+
     sleep(1)
-    robot.turn_on_point_robot_angle(180, "left", 0.01)
+    ldr.record_turn(robot, "left", log_file)
+
     sleep(1)
-    robot.turn_on_point_robot_angle(180, "right", 0.01)
+    ldr.record_turn(robot, "right", log_file)
 finally:
+    ldr.logging = False
     ldr.running = False
     robot.stop()
