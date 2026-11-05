@@ -13,7 +13,7 @@ wheel_base = 24.5
 log_file = "turns.txt"
 
 
-ldr = Sensor(sensor_pin)
+ldr = Sensor(sensor_pin, sensor_led_pin)
 
 motorleft = StepperMotor(leftmotor_pins, pwm_pct=0.2)
 motorright = StepperMotor(rightmotor_pins, pwm_pct=0.2)

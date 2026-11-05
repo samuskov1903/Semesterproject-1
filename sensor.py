@@ -4,18 +4,29 @@ import _thread
 
 
 class Sensor:
-    def __init__(self, sensorpin):
+    def __init__(self, sensorpin, led=None):
         self.pin = sensorpin
         self.surface = 1 # Repræseter farven overfladen, 1 = hvid, 0 = Sort
         self.running = True
         self.logging = False
         self.log_thread_running = False
+        self.sensor_LED = led
+        self.sensor_LED_pin = Pin(self.sensor_LED, Pin.OUT) if self.sensor_LED is not None else None
         self.reading_Pin = ADC(self.pin) # Laver ADC af sensor Pin
-        
+        self.log_list = []
+            
         
     def read(self):
             reading = self.reading_Pin.read_u16()
             return reading
+        
+    def light_led(self, status):
+        if self.sensor_LED_pin is None:
+            return
+        if status == "on":
+            self.sensor_LED_pin.on()
+        else:
+            self.sensor_LED_pin.off()
         
     def read_cont(self, interval): #interval how many times a second
         while self.running:
@@ -46,6 +57,11 @@ class Sensor:
                 pin.off()
             sleep(1/interval)
             
+    def log_to_list(self, interval=100):
+        while self.running and self.logging:
+            self.log_list.append([time(), self.read()])
+            sleep(1 / interval)
+            
     def save_data(self, file_name, data):
         with open(file_name, "a") as log:
             log.write(data)
@@ -58,7 +74,7 @@ class Sensor:
                 print(data)
                 self.save_data(file_name, str(data) + "\n")
                 sleep(1/interval)           
-                
+      
     def log_to_file(self, filename, direction, interval=10, batch_size=20):
         self.log_thread_running = True
         buffer = []
