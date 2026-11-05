@@ -1,6 +1,6 @@
 #Hussein Mohamed Kleit   hukle26@student.sdu.dk
-
-'''from time import sleep
+'''
+from time import sleep
 from stepper_motor import StepperMotor
 from Differential_drive import differentieldrive
 
@@ -18,17 +18,20 @@ motorleft.set_step_mode("half")
 motorright.set_step_mode("half")
 
 # Create the differential drive using both motors and the wheel diameter.
-robot = differentieldrive(motorleft, motorright, 8.6)
+robot = differentieldrive(motorleft, motorright, 8.6, 24.5)
 
 # Allow the hardware a moment to initialize before moving.
 #sleep(2)
 # Drive a square: move forward 100cm, then turn 90 degrees left, four times.
 #robot.move_dist(5,"forward", 0.002)
 for i in range(4):
-    robot.move_dist(100,"forward", 0.002)
+    robot.move_dist(100,"forward", 0.01)
     sleep(1)
     robot.turn_on_point_robot_angle(90, "left", 0.01)
-    sleep(1)'''
+    sleep(1)
+    
+    '''
+    
     
 
 from sensor import Sensor
@@ -55,13 +58,14 @@ motorleft.set_step_mode("half")
 motorright.set_step_mode("half")
 
 # Create the differential drive using both motors and the wheel diameter.
-robot = differentieldrive(motorleft, motorright, 8.6)
+robot = differentieldrive(motorleft, motorright, 8.6, 24.5)
     
 
 # Starting thread with sensor
 #_thread.start_new_thread(ldr.read_cont_bin_led(10, 40000, 5000), ())
-_thread.start_new_thread(ldr.read_save_cont, ("log.txt", 10,))
+_thread.start_new_thread(ldr.read_save_cont, ("nøgen.txt", 10,))
 
+ldr.light_led("off")
 try:
     sleep(1)
     robot.turn_on_point_robot_angle(180, "left", 0.01)

@@ -52,6 +52,4 @@ class Sensor:
                 data = self.read()
                 print(data)
                 self.save_data(file_name, str(data) + "\n")
-                sleep(1/interval)
-        
-            
+                sleep(1/interval)           
