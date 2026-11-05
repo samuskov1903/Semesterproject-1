@@ -69,7 +69,6 @@ class Sensor:
 
                 while self.running and self.logging:
                     buffer.append(str(time()) + "," + str(self.read()))
-                    print(self.read)
                     if len(buffer) >= batch_size:
                         log.write("\n".join(buffer) + "\n")
                         log.flush()
@@ -87,7 +86,7 @@ class Sensor:
         self.logging = True
         _thread.start_new_thread(
             self.log_to_file,
-            (filename, direction, 10, 100),
+            (filename, direction, 15, 150),
         )
 
         robot.turn_on_point_robot_angle(180, direction, 0.01)

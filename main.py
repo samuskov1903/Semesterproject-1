@@ -5,6 +5,7 @@ from stepper_motor import StepperMotor
 
 
 sensor_pin = 28
+sensor_led_pin = 27
 leftmotor_pins = [0, 1, 2, 3]
 rightmotor_pins = [4, 5, 6, 7]
 wheel_diameter = 8.6
