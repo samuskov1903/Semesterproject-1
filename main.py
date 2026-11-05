@@ -55,7 +55,7 @@ motorleft.set_step_mode("half")
 motorright.set_step_mode("half")
 
 # Create the differential drive using both motors and the wheel diameter.
-robot = differentieldrive(motorleft, motorright, 8.6)
+robot = differentieldrive(motorleft, motorright, 8.6, 24.5)
     
 
 # Starting thread with sensor
