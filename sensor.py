@@ -81,7 +81,7 @@ class Sensor:
 
         try:
             with open(filename, "a") as log:
-                log.write("\n--- " + direction + " turn ---\n")
+                log.write("\n--- " + direction + " turn ---\n"+"sample rate:" + str(interval) +"\n")
 
                 while self.running and self.logging:
                     buffer.append(str(time()) + "," + str(self.read()))

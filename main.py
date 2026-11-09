@@ -14,11 +14,13 @@ log_file = "turns.txt"
 
 
 ldr = Sensor(sensor_pin, sensor_led_pin)
+ldr.light_led("on")
 
 motorleft = StepperMotor(leftmotor_pins, pwm_pct=0.2)
 motorright = StepperMotor(rightmotor_pins, pwm_pct=0.2)
 motorleft.set_step_mode("half")
 motorright.set_step_mode("half")
+
 
 robot = differentieldrive(
     motorleft,
@@ -38,6 +40,7 @@ try:
     sleep(1)
     ldr.record_turn(robot, "right", log_file)
 finally:
+    ldr.light_led("off")
     ldr.logging = False
     ldr.running = False
     robot.stop()
