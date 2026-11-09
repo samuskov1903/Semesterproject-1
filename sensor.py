@@ -134,4 +134,4 @@ class Sensor:
         self.logging = False
         while self.log_thread_running:
             sleep(0.01)
-s
+
