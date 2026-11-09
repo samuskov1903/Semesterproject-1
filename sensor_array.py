@@ -27,12 +27,11 @@ class SensorArray:
             else:
                 led.off()
 
-    def select_pin(p, pins):
+    def select_pin(self, p, pins):
         for i in range (3):
             pins[i].value((p>>i)&1)
-            print(pins[i].value((p>>i)&1))
 
-    def read_sens():
+    def read_sens(self):
         sens = []
         for i in range(8):
             self.select_pin(i, self.s_pins)
