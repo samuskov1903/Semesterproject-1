@@ -137,7 +137,7 @@ class differentieldrive :
     def cm_to_steps(self, dist_cm):
             self.dist_cm = dist_cm
             
-            revs_for_dist = self.dist_cm/(self.wheel_dia*pi)
+            revs_for_dist = self.dist_cm/(self.wheel_dia*math.pi)
             steps_for_dist = revs_for_dist * len(self.motorright.modes[self.motorright.current_mode])*50
             print(self.motorright.current_mode)
             print(steps_for_dist)
