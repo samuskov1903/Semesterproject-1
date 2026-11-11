@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local environment files
+.env
+
+# Excel temporary lock files
+~$*.xlsx
+
+# VS Code settings
+.vscode/
+
+# Local files
+temp_main.py
+multiplexing.py
