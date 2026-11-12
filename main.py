@@ -4,42 +4,28 @@ from Differential_drive import differentieldrive
 from stepper_motor import StepperMotor
 
 
-sensor_pin = 28
-sensor_led_pin = 27
+sensor1_pin = 28
+sensor1_led_pin = 27
+sensor2_pin = 26
+sensor2_led_pin = 22
 leftmotor_pins = [0, 1, 2, 3]
 rightmotor_pins = [4, 5, 6, 7]
-<<<<<<< HEAD
-
-motorleft = StepperMotor(leftmotor_pins, pwm_pct=0.35)
-motorright = StepperMotor(rightmotor_pins, pwm_pct=0.35)
-
-motorleft.set_step_mode("half") # "full" for full step. "half" for half step og et nummer uden "" for micro
-motorright.set_step_mode("half") # "full" for full step. "half" for half step og et nummer uden "" for micro
-print(f"Skridt FØR bevægelse: {motorleft.total_steps}") 
-
-robot = differentieldrive(motorleft, motorright, 8.6)
-    
-#robot.turn_on_wheel_robot_steps(1153, "left", 0.02)
-motorleft.set_step_mode("full") # "full" for full step. "half" for half step og et nummer uden "" for micro
-motorright.set_step_mode("full") # "full" for full step. "half" for half step og et nummer uden "" for micro
-
-print(f"Skridt FØR bevægelse: {motorleft.total_steps}") 
-
-robot.drive_robot_steps(600, "forward",0.02)
-=======
 wheel_diameter = 8.6
 wheel_base = 24.5
 log_file = "turns.txt"
 
 
-ldr = Sensor(sensor_pin, sensor_led_pin)
-ldr.light_led("on")
+ldrleft = Sensor(sensor1_pin, sensor1_led_pin)
+ldrleft.light_led("on")
+ldrright = Sensor(sensor2_pin, sensor2_led_pin)
+ldrright.light_led("on")
+
+
 
 motorleft = StepperMotor(leftmotor_pins, pwm_pct=0.2)
 motorright = StepperMotor(rightmotor_pins, pwm_pct=0.2)
-motorleft.set_step_mode("half")
-motorright.set_step_mode("half")
->>>>>>> 95a73f19b579fa5ae8450e2c8d8d2ee6ec1ec812
+motorleft.set_step_mode("full")
+motorright.set_step_mode("full")
 
 
 robot = differentieldrive(
@@ -49,18 +35,13 @@ robot = differentieldrive(
     wheel_base,
 )
 
+#robot.move_dist(200, "forward", 0.001)
 
-try:
-    with open(log_file, "w") as log:
-        log.write("Sensor recordings\n")
+sleep(2)
+while True:
+    if ldrright.bin_read(30000, 2000) == 0:
+        robot.turn_on_point_robot_angle(20, "left", 0.001)
+    elif ldrleft.bin_read(30000, 2000) == 0:
+        robot.turn_on_point_robot_angle(20, "right", 0.001)
+    robot.move_dist(2, "forward", 0.001)
 
-    sleep(1)
-    ldr.record_turn(robot, "left", log_file)
-
-    sleep(1)
-    ldr.record_turn(robot, "right", log_file)
-finally:
-    ldr.light_led("off")
-    ldr.logging = False
-    ldr.running = False
-    robot.stop()

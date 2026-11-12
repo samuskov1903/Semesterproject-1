@@ -50,7 +50,6 @@ class Sensor:
             self.surface = 1  # The reading moved above the white-surface limit.
         elif self.surface == 1 and reading < switch - threshold:
             self.surface = 0  # The reading moved below the black-surface limit.
-        print(self.surface)
         return self.surface
     
     def read_cont_bin(self, interval, switch, threshold):
