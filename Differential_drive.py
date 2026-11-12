@@ -107,6 +107,16 @@ class differentieldrive :
                         sleep(delay/steps)
                     self.motorright.step_once("forward")
                     sleep(delay)
-                    
         finally:
             self.stop()
+    
+    
+    def follow_line(self, robotfull, robotmicro, 
+                    move_delay, move_amount, ldrright, 
+                    ldrleft, switch, threshold, turn_delay, turn_amount, ratio,):
+        while True :
+            if ldrright.bin_read(switch ,threshold) == 0:
+                robotmicro.turn_curve_cm(turn_amount, "right", turn_delay, ratio)
+            elif ldrleft.bin_read(switch, threshold) == 0:
+                robotmicro.turn_curve_cm(turn_amount, "left", turn_delay, ratio)
+            robotfull.move.dist(move_amount, "forward", move_delay)

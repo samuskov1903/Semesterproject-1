@@ -49,9 +49,12 @@ sleep(2)
 #    robotfull.move_dist(2,"forward", 0.00099999999)
 #robot.move_dist(5, "forward", 0.001)
 
+robotfull.follow_line(robotfull, robotmicro, 0.002, 1,ldrright,ldrleft,30000, 2000, 0.001, 3, 3)
+""""
 while True:
     if ldrright.bin_read(30000, 2000) == 0:
         robotmicro.turn_curve_cm(3, "right", 0.001, 3)
     elif ldrleft.bin_read(30000, 2000) == 0:
         robotmicro.turn_curve_cm(3, "left", 0.001, 3)
-    robotfull.move_dist(1, "forward",0.002 )
+    robotfull.move_dist(1, "forward",0.002)
+"""
