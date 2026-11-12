@@ -78,18 +78,9 @@ class differentieldrive :
             # Convert a distance in centimeters into wheel rotations.
             self.dist_cm = dist_cm 
             
-<<<<<<< HEAD
-            revs_for_dist = self.dist_cm/(self.wheel_dia*math.pi)
-            steps_for_dist = revs_for_dist * len(self.motorright.modes[self.motorright.current_mode])*50
-            print(self.motorright.current_mode)
-            print(steps_for_dist)
-            print(len(self.motorright.modes[self.motorright.current_mode]))
-            return steps_for_dist
-=======
             revs_for_dist = self.dist_cm/(self.wheel_dia*math.pi) # Convert distance to wheel rotations.
             steps_for_dist = revs_for_dist * len(self.motorright.modes[self.motorright.current_mode])*50 # Convert wheel rotations to motor steps.
             return steps_for_dist # Return the required number of motor steps.
->>>>>>> 95a73f19b579fa5ae8450e2c8d8d2ee6ec1ec812
 
     def move_dist(self, distance_cm, direction, delay=0.01): # Move a distance in the requested direction.
         # Convert the distance into steps and drive both wheels.
