@@ -87,18 +87,26 @@ class differentieldrive :
         self.drive_robot_steps(steps, direction, delay)
         self.stop()
 
+    def turn_curve_cm(self, cm, direction, delay, ratio) :
+        steps = self.cm_to_steps(cm)
+        self.turn_curve(steps, direction, delay, ratio)
+
+    
     def turn_curve(self, steps, direction, delay, ratio):
         try:
             for _ in range(round(steps)):
                 if direction == "left" :
                     for _ in range(ratio):
                         self.motorright.step_once("forward")
+                        sleep(delay/steps)
                     self.motorleft.step_once("forward")
                     sleep(delay)
                 elif direction == "right" :
                     for _ in range(ratio):
-                        self.motorleft.step.once("forward")
+                        self.motorleft.step_once("forward")
+                        sleep(delay/steps)
                     self.motorright.step_once("forward")
+                    sleep(delay)
                     
         finally:
             self.stop()
