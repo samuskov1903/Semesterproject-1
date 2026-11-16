@@ -1,0 +1,80 @@
+import asyncio
+import aioble
+import bluetooth
+
+
+
+class ControlBLE:
+    def __init__(self):
+        #UUID should be 128bit for costum BLE Which they are without the dash( - )
+        self.SERVICE_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef0")
+        self.CHAR_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef1")
+        self.MESSAGE_INTERVAL = 0
+        self.service = aioble.Service(self.SERVICE_UUID)
+        self.char = aioble.Characteristic(
+            self.service, self.CHAR_UUID, read=True, write=True, notify=True, capture=True
+        )
+        # Make the service available to connected BLE clients.
+        aioble.register_services(self.service)
+    
+    async def advertise(self):
+        while True:
+            # Advertise until a client, such as pico_a, connects.
+            print("Advertising...")
+            connection = await aioble.advertise(
+                250_000, name="pico-b", services=[self.SERVICE_UUID]
+            )
+            print("Connected to", connection.device)
+            # Send a notification back to the connected client.
+            self.char.notify(connection, b"pong")
+            
+            # Handle messages while the client remains connected.
+            while connection.is_connected():
+                try:
+                    # Wait up to one second for the client to write data.
+                    _, data = await self.char.written(timeout_ms=1000)
+                    print("B received:", data)
+
+
+                except asyncio.TimeoutError:
+                    # No message arrived; keep waiting for the next one.
+                    pass
+                except aioble.DeviceDisconnectedError:
+                    # Leave the inner loop and advertise again for another client.
+                    break
+
+class CarBle:
+    def __init__(self):
+        self.SERVICE_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef0")
+        self.CHAR_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef1")
+        self.MESSAGE_INTERVAL = 0
+        
+            
+    async def connect(self):
+        # Scan for up to five seconds. Active scanning asks devices for extra
+                # advertising data, including the advertised name and service UUID.
+                async with aioble.scan(5000, interval_us=300, window_us=30000, active=True) as scanner:
+                    async for result in scanner:
+                        # Only accept the intended device, and verify that it offers the
+                        # service this client needs.
+                        if result.name() == "pico-b" and self.SERVICE_UUID in result.services():
+                            return result.device
+                # No matching device was found during this scan.
+                return None 
+            
+    async def FindController(self):
+        device = None
+        while device is None:
+            print("Scanning...")
+            device = await self.connect()
+    
+        connection = await device.connect()
+        service = await connection.service(self.SERVICE_UUID)
+        char = await service.characteristic(self.CHAR_UUID)
+        
+        await char.subscribe(notify=True)
+    
+        return connection, char
+
+
+    
