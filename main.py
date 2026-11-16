@@ -20,6 +20,10 @@ ldrleft.light_led("on")
 ldrright = Sensor(sensor2_pin, sensor2_led_pin)
 ldrright.light_led("on")
 
+motorleft = StepperMotor(leftmotor_pins, pwm_pct=0.2)
+motorright = StepperMotor(rightmotor_pins, pwm_pct=0.2)
+motorleft.set_step_mode("half")
+motorright.set_step_mode("half")
 
 
 motorleftfull = StepperMotor(leftmotor_pins, pwm_pct=0.25)
