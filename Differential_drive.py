@@ -77,22 +77,74 @@ class differentieldrive :
     def cm_to_steps(self, dist_cm):
             # Convert a distance in centimeters into wheel rotations.
             self.dist_cm = dist_cm 
-            
-<<<<<<< HEAD
-            revs_for_dist = self.dist_cm/(self.wheel_dia*math.pi)
-            steps_for_dist = revs_for_dist * len(self.motorright.modes[self.motorright.current_mode])*50
-            print(self.motorright.current_mode)
-            print(steps_for_dist)
-            print(len(self.motorright.modes[self.motorright.current_mode]))
-            return steps_for_dist
-=======
             revs_for_dist = self.dist_cm/(self.wheel_dia*math.pi) # Convert distance to wheel rotations.
             steps_for_dist = revs_for_dist * len(self.motorright.modes[self.motorright.current_mode])*50 # Convert wheel rotations to motor steps.
             return steps_for_dist # Return the required number of motor steps.
->>>>>>> 95a73f19b579fa5ae8450e2c8d8d2ee6ec1ec812
 
     def move_dist(self, distance_cm, direction, delay=0.01): # Move a distance in the requested direction.
         # Convert the distance into steps and drive both wheels.
         steps = round(self.cm_to_steps(distance_cm))
         self.drive_robot_steps(steps, direction, delay)
         self.stop()
+
+    def turn_curve_cm(self, cm, direction, delay, ratio) :
+        steps = self.cm_to_steps(cm)
+        self.turn_curve(steps, direction, delay, ratio)
+
+    
+    def turn_curve(self, steps, direction, delay, ratio):
+        try:
+            for _ in range(round(steps)):
+                if direction == "right" :
+                    for _ in range(ratio):
+                        self.motorright.step_once("forward")
+                        sleep(delay/steps)
+                    self.motorleft.step_once("forward")
+                    sleep(delay)
+                elif direction == "left" :
+                    for _ in range(ratio):
+                        self.motorleft.step_once("forward")
+                        sleep(delay/steps)
+                    self.motorright.step_once("forward")
+                    sleep(delay)
+        finally:
+            self.stop()
+    def follow_line(self, robotmicro, 
+                    move_delay, move_amount, ldrright, 
+                    ldrleft, switch, threshold, turn_delay, turn_amount, ratio,):
+        while True :
+            if ldrright.bin_read(switch ,threshold) == 0:
+                robotmicro.turn_curve_cm(turn_amount, "left", turn_delay, ratio)
+            elif ldrleft.bin_read(switch, threshold) == 0:
+                robotmicro.turn_curve_cm(turn_amount, "right", turn_delay, ratio)
+            self.move_dist(move_amount, "forward", move_delay)
+    def drive_to_junction(self, direction, number , delay, robotmicro, ldrleft, ldrright, sensor_wheel_distance=16, switch=30000, threshold=2000):
+        k = 1
+        turned = False
+        if number > 1:
+            while k < number :
+                if ldrleft.bin_read(switch, threshold) == 0 or ldrright.bin_read(switch, threshold)==0:
+                    k=k+1
+                    self.move_dist(5, "forward", delay)
+                self.move_dist(1, "forward", delay)
+        if direction == "left" :
+            while turned == False:
+                self.move_dist(1,"forward", delay)
+                if ldrleft.bin_read(switch, threshold) == 0:
+                    self.move_dist(sensor_wheel_distance, "forward", delay)
+                    robotmicro.turn_on_point_robot_angle(90, "right", delay)
+                    turned = True     
+        elif direction == "right" :
+            while turned == False:
+                self.move_dist(1, "forward", delay)
+                if ldrright.bin_read(switch, threshold) == 0:
+                    self.move_dist(sensor_wheel_distance, "forward", delay)
+                    robotmicro.turn_on_point_robot_angle(90, "left", delay)
+                    turned = True
+        elif direction == "end" :
+            while turned == False:
+                self.move_dist(1, "forward", delay)
+                if ldrright.bin_read(switch, threshold) == 0 or ldrleft.bin_read(switch, threshold) == 0:
+                    turned = True
+        self.stop()
+        
