@@ -1,3 +1,4 @@
+from machine import Pin
 """Manually defined navigation map for the robot course.
 
 The node names match the red labels in the course drawing. Numbered nodes
@@ -10,7 +11,13 @@ p = pickup
 
 # Directions are relative to the robot's current orientation.  Each node can
 # therefore have a straight, backward, left, and/or right route.
-PATH_MAP = {
+
+class Navigation:
+    """Track the robot's current node on the manually defined map."""
+
+    def __init__(self, magnet_pin, start="start", ):
+        self.current_node = start
+        self.PATH_MAP  = {
     "start": {"straight": "1"},
     "1": {"backward": "start", "straight": "2", "right": "18"},
     "2": {"backward": "1", "left": "3", "right": "15"},
@@ -44,25 +51,21 @@ PATH_MAP = {
     "p1": {"backward": "17"},
     "p2": {"backward": "10"},
 }
-
-
-class Navigation:
-    """Track the robot's current node on the manually defined map."""
-
-    def __init__(self, start="start"):
-        if start not in PATH_MAP:
+        if start not in self.PATH_MAP:
             raise ValueError("Unknown starting node: " + start)
-        self.current_node = start
+        self.elektropin = Pin(magnet_pin, Pin.OUT)
 
     def available_directions(self):
         """Return the directions available from the current node."""
-        return PATH_MAP[self.current_node]
+        return self.PATH_MAP[self.current_node]
 
     def move(self, direction):
         """Move in a direction listed for the current node."""
-        if direction not in PATH_MAP[self.current_node]:
+        if direction not in self.PATH_MAP[self.current_node]:
             raise ValueError(
                 "No " + direction + " path from " + self.current_node
             )
-        self.current_node = PATH_MAP[self.current_node][direction]
+        self.current_node = self.PATH_MAP[self.current_node][direction]
         return self.current_node
+    def turn_on_magnet(self):
+        self.elektropin.on()

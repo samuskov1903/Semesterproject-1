@@ -22,8 +22,8 @@ ldrright.light_led("on")
 
 
 
-motorleftfull = StepperMotor(leftmotor_pins, pwm_pct=0.2)
-motorrightfull = StepperMotor(rightmotor_pins, pwm_pct=0.2)
+motorleftfull = StepperMotor(leftmotor_pins, pwm_pct=0.25)
+motorrightfull = StepperMotor(rightmotor_pins, pwm_pct=0.25)
 motorleftmicro = StepperMotor(leftmotor_pins, pwm_pct=0.2)
 motorrightmicro = StepperMotor(rightmotor_pins, pwm_pct=0.2)
 motorleftfull.set_step_mode("full")
@@ -39,22 +39,26 @@ robotfull = differentieldrive(
     wheel_diameter,
     wheel_base,
 )
-robotmicro = differentieldrive(motorleftmicro, motorrightmicro, wheel_diameter, wheel_base)
+robotmicro = differentieldrive(
+    motorleftmicro, 
+    motorrightmicro, 
+    wheel_diameter, 
+    wheel_base)
 
-#robot.move_dist(200, "forward", 0.001)
+
 
 sleep(2)
-#robot.turn_curve_cm(2, "right", 0.005, 5)
-#while True:
-#    robotfull.move_dist(2,"forward", 0.00099999999)
-#robot.move_dist(5, "forward", 0.001)
+#robotfull.follow_line(robotmicro, 0.002, 1,ldrright,ldrleft,30000, 2000, 0.001, 3, 3)
+robotfull.follow_line(robotmicro, 0.001, 0.5, ldrright, ldrleft, 30000, 2000, 0.001, 1, 5 )
+        
 
-robotfull.follow_line(robotfull, robotmicro, 0.002, 1,ldrright,ldrleft,30000, 2000, 0.001, 3, 3)
-""""
-while True:
-    if ldrright.bin_read(30000, 2000) == 0:
-        robotmicro.turn_curve_cm(3, "right", 0.001, 3)
-    elif ldrleft.bin_read(30000, 2000) == 0:
-        robotmicro.turn_curve_cm(3, "left", 0.001, 3)
-    robotfull.move_dist(1, "forward",0.002)
-"""
+
+
+
+
+
+
+
+
+
+
