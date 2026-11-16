@@ -48,6 +48,8 @@ class CarBle:
         self.SERVICE_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef0")
         self.CHAR_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef1")
         self.MESSAGE_INTERVAL = 0
+        self.connection = None
+        self.char = None
         
             
     async def connect(self):
@@ -71,10 +73,31 @@ class CarBle:
         connection = await device.connect()
         service = await connection.service(self.SERVICE_UUID)
         char = await service.characteristic(self.CHAR_UUID)
-        
         await char.subscribe(notify=True)
-    
+
+        self.connection = connection
+        self.char = char
         return connection, char
+
+    async def send(self, message):
+        """Send bytes to the connected Pico."""
+        if self.char is None:
+            raise RuntimeError("BLE is not connected")
+        if isinstance(message, str):
+            message = message.encode()
+        await self.char.write(message)
+
+    async def listen(self, handler):
+        """Handle notifications without blocking the rest of the controller."""
+        if self.char is None:
+            raise RuntimeError("BLE is not connected")
+
+        while self.connection.is_connected():
+            try:
+                data = await self.char.notified()
+                await handler(data)
+            except aioble.DeviceDisconnectedError:
+                break
 
 
     
