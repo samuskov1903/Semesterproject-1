@@ -5,12 +5,15 @@ import bluetooth
 
 
 class ControlBLE:
+    """Provide the robot's BLE service and receive messages from a controller."""
+
     def __init__(self):
-        #UUID should be 128bit for costum BLE Which they are without the dash( - )
+        # Both endpoints must use the same custom 128-bit UUIDs.
         self.SERVICE_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef0")
         self.CHAR_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef1")
         self.MESSAGE_INTERVAL = 0
         self.service = aioble.Service(self.SERVICE_UUID)
+        # The characteristic supports reading, writing, and notifications.
         self.char = aioble.Characteristic(
             self.service, self.CHAR_UUID, read=True, write=True, notify=True, capture=True
         )
@@ -18,6 +21,7 @@ class ControlBLE:
         aioble.register_services(self.service)
     
     async def advertise(self):
+        """Advertise the robot and process messages from connected clients."""
         while True:
             # Advertise until a client, such as pico_a, connects.
             print("Advertising...")
@@ -34,8 +38,6 @@ class ControlBLE:
                     # Wait up to one second for the client to write data.
                     _, data = await self.char.written(timeout_ms=1000)
                     print("B received:", data)
-
-
                 except asyncio.TimeoutError:
                     # No message arrived; keep waiting for the next one.
                     pass
@@ -44,6 +46,8 @@ class ControlBLE:
                     break
 
 class CarBle:
+    """Connect to the robot's BLE service and exchange messages with it."""
+
     def __init__(self):
         self.SERVICE_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef0")
         self.CHAR_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef1")
@@ -53,8 +57,9 @@ class CarBle:
         
             
     async def connect(self):
+        """Scan for the robot and return its device when it is found."""
         # Scan for up to five seconds. Active scanning asks devices for extra
-                # advertising data, including the advertised name and service UUID.
+        # advertising data, including the advertised name and service UUID.
                 async with aioble.scan(5000, interval_us=300, window_us=30000, active=True) as scanner:
                     async for result in scanner:
                         # Only accept the intended device, and verify that it offers the
@@ -65,14 +70,17 @@ class CarBle:
                 return None 
             
     async def FindController(self):
+        """Keep scanning until the robot is found, then return its BLE handles."""
         device = None
         while device is None:
             print("Scanning...")
             device = await self.connect()
     
+        # Resolve the service and characteristic exposed by the robot.
         connection = await device.connect()
         service = await connection.service(self.SERVICE_UUID)
         char = await service.characteristic(self.CHAR_UUID)
+        # Subscribe so listen() can receive notifications from the robot.
         await char.subscribe(notify=True)
 
         self.connection = connection
@@ -83,6 +91,7 @@ class CarBle:
         """Send bytes to the connected Pico."""
         if self.char is None:
             raise RuntimeError("BLE is not connected")
+        # Accept text as a convenience, but always send bytes over BLE.
         if isinstance(message, str):
             message = message.encode()
         await self.char.write(message)
@@ -92,6 +101,7 @@ class CarBle:
         if self.char is None:
             raise RuntimeError("BLE is not connected")
 
+        # Wait for notifications until the remote device disconnects.
         while self.connection.is_connected():
             try:
                 data = await self.char.notified()
