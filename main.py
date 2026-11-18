@@ -2,6 +2,7 @@ from time import sleep
 from sensor import Sensor
 from Differential_drive import differentieldrive
 from stepper_motor import StepperMotor
+from Navigation import Navigation
 
 
 sensor1_pin = 28
@@ -20,14 +21,9 @@ ldrleft.light_led("on")
 ldrright = Sensor(sensor2_pin, sensor2_led_pin)
 ldrright.light_led("on")
 
-motorleft = StepperMotor(leftmotor_pins, pwm_pct=0.2)
-motorright = StepperMotor(rightmotor_pins, pwm_pct=0.2)
-motorleft.set_step_mode("half")
-motorright.set_step_mode("half")
 
-
-motorleftfull = StepperMotor(leftmotor_pins, pwm_pct=0.25)
-motorrightfull = StepperMotor(rightmotor_pins, pwm_pct=0.25)
+motorleftfull = StepperMotor(leftmotor_pins, pwm_pct=0.2)
+motorrightfull = StepperMotor(rightmotor_pins, pwm_pct=0.2)
 motorleftmicro = StepperMotor(leftmotor_pins, pwm_pct=0.2)
 motorrightmicro = StepperMotor(rightmotor_pins, pwm_pct=0.2)
 motorleftfull.set_step_mode("full")
@@ -41,20 +37,27 @@ robotfull = differentieldrive(
     motorleftfull,
     motorrightfull,
     wheel_diameter,
-    wheel_base,
+    wheel_base
 )
 robotmicro = differentieldrive(
     motorleftmicro, 
     motorrightmicro, 
     wheel_diameter, 
     wheel_base)
+rute = Navigation(14)
 
 
 
-sleep(2)
-#robotfull.follow_line(robotmicro, 0.002, 1,ldrright,ldrleft,30000, 2000, 0.001, 3, 3)
-robotfull.follow_line(robotmicro, 0.001, 0.5, ldrright, ldrleft, 30000, 2000, 0.001, 1, 5 )
-        
+
+for i in rute.rute2tilbage :
+    print(i)
+    robotfull.drive_to_junction(i, 0.005, robotmicro, ldrleft, ldrright)
+    
+
+
+#sleep(2)
+#robotfull.turn_on_point_robot_angle(180, "left", 0.01)
+
 
 
 

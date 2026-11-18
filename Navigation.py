@@ -51,10 +51,30 @@ class Navigation:
     "p1": {"backward": "17"},
     "p2": {"backward": "10"},
 }
+        self.rutestart = ["right", "straight", "straight",
+               "end"]
+        self.rute1frem = ["backward180", "straight", "right",
+                      "end"]
+        self.rute1tilbage = ["backward180", "left", "straight",
+                             "end"]
+        self.rute2frem = ["backward180", "right", "straight",
+                          "straight", "right", "end"]
+        self.rute2tilbage = ["backward180", "left", "straight", 
+                            "straight", "left", "end"]
+        self.rute3frem = ["backward180", "right", "straight",
+                          "straight", "straight", "right45", 
+                          "left45", "right", "end"]
+        self.rute3tilbage = ["backward180", "left", "right45"
+                             "left45", "straight", "straight",
+                              "straight", "right", "end"]
+        self.rute4frem = ["backward180", "straight", "straight",
+                          "right", "left", "straight", "end"]
+        self.rute4tilbage = ["backward180"]
+        
         if start not in self.PATH_MAP:
             raise ValueError("Unknown starting node: " + start)
         self.elektropin = Pin(magnet_pin, Pin.OUT)
-
+        self.rute = []
     def available_directions(self):
         """Return the directions available from the current node."""
         return self.PATH_MAP[self.current_node]
@@ -67,5 +87,8 @@ class Navigation:
             )
         self.current_node = self.PATH_MAP[self.current_node][direction]
         return self.current_node
-    def turn_on_magnet(self):
-        self.elektropin.on()
+    def toggle_magnet(self, status):
+        if status == "on":
+            self.elektropin.on()
+        elif status == "off":
+            self.elektropin.off()
