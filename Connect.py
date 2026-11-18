@@ -60,14 +60,14 @@ class CarBle:
         """Scan for the robot and return its device when it is found."""
         # Scan for up to five seconds. Active scanning asks devices for extra
         # advertising data, including the advertised name and service UUID.
-                async with aioble.scan(5000, interval_us=300, window_us=30000, active=True) as scanner:
-                    async for result in scanner:
-                        # Only accept the intended device, and verify that it offers the
-                        # service this client needs.
-                        if result.name() == "pico-b" and self.SERVICE_UUID in result.services():
-                            return result.device
+        async with aioble.scan(5000, interval_us=300, window_us=30000, active=True) as scanner:
+            async for result in scanner:
+                # Only accept the intended device, and verify that it offers the
+                # service this client needs.
+                if result.name() == "pico-b" and self.SERVICE_UUID in result.services():
+                    return result.device
                 # No matching device was found during this scan.
-                return None 
+            return None 
             
     async def FindController(self):
         """Keep scanning until the robot is found, then return its BLE handles."""
