@@ -17,6 +17,7 @@ class ControlBLE:
         self.char = aioble.Characteristic(
             self.service, self.CHAR_UUID, read=True, write=True, notify=True, capture=True
         )
+        self.connection = None
         # Make the service available to connected BLE clients.
         aioble.register_services(self.service)
     
@@ -29,6 +30,7 @@ class ControlBLE:
                 250_000, name="pico-b", services=[self.SERVICE_UUID]
             )
             print("Connected to", connection.device)
+            self.connection = connection
             # Send a notification back to the connected client.
             self.char.notify(connection, b"pong")
             
@@ -44,14 +46,15 @@ class ControlBLE:
                 except aioble.DeviceDisconnectedError:
                     # Leave the inner loop and advertise again for another client.
                     break
-    async def send(self, message):
-            """Send bytes to the connected Pico."""
-            if self.char is None:
-                raise RuntimeError("BLE is not connected")
-            # Accept text as a convenience, but always send bytes over BLE.
-            if isinstance(message, str):
-                message = message.encode()
-            await self.char.write(message)
+    def send(self, message):
+        """Send bytes to the connected controller."""
+        if self.connection is None or not self.connection.is_connected():
+            raise RuntimeError("BLE is not connected")
+        if isinstance(message, str):
+            message = message.encode()
+        elif isinstance(message, list):
+            message = repr(message).encode()
+        self.char.notify(self.connection, message)
 
 class CarBle:
     """Connect to the robot's BLE service and exchange messages with it."""
@@ -68,7 +71,7 @@ class CarBle:
         """Scan for the robot and return its device when it is found."""
         # Scan for up to five seconds. Active scanning asks devices for extra
         # advertising data, including the advertised name and service UUID.
-        async with aioble.scan(5000, interval_us=300, window_us=30000, active=True) as scanner:
+        async with aioble.scan(5000, interval_us=300, window_us=30000, active=False) as scanner:
             async for result in scanner:
                 # Only accept the intended device, and verify that it offers the
                 # service this client needs.

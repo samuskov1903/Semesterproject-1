@@ -1,8 +1,7 @@
-import asyncio
-
 from Connect import CarBle
 from stepper_motor import StepperMotor
 from Differential_drive import differentieldrive
+import asyncio
 
 leftmotor_pins = [0, 1, 2, 3]
 rightmotor_pins = [4, 5, 6, 7]
@@ -22,28 +21,30 @@ robot = differentieldrive(
 )
 
 
-car = CarBle()
+async def handle_message(message):
+    print("Controller message:", message)
+    try:
+        parts = message.decode().strip("[]").split(",")
+        turn = int(parts[0])
+        speed = int(parts[1])
+    except (ValueError, IndexError, AttributeError):
+        return
 
-car.FindController()
+    turn_ratio = turn / 1000
+    if turn < 0:
+        robot.turn_curve_cm(1, "left", speed, turn_ratio)
+    elif turn > 0:
+        robot.turn_curve_cm(1, "right", speed, turn_ratio)
+    elif speed < 0:
+        robot.move_dist(1, "backward", speed)
+    elif speed > 0:
+        robot.move_dist(1, "forward", speed)
 
-while True:
-    message = car.listen
-    print(message)
 
-while True:
-    movementList = car.listen()
-    turn = movementList[0]
-    speed = movementList[1]
-    turn_ratio = turn/1000
-    if movementList[0] != 0:
-        if turn < 0:
-            robot.turn_curve_cm(1, "left", speed, turn_ratio)
+async def main():
+    car = CarBle()
+    await car.FindController()
+    await car.listen(handle_message)
 
-        elif turn > 0:
-            robot.turn_curve_cm(1, "right", speed, turn_ratio)
-        
-        else:
-            if speed < 0:
-                robot.move_dist(1, "backward", speed)
-            elif speed > 0:
-                robot.move_dist(1, "forward", speed)
+
+asyncio.run(main())
