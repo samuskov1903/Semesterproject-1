@@ -27,10 +27,21 @@ car = CarBle()
 car.FindController()
 
 
+
 while True:
     movementList = car.listen()
     turn = movementList[0]
     speed = movementList[1]
+    turn_ratio = turn/1000
     if movementList[0] != 0:
         if turn < 0:
-            
+            robot.turn_curve_cm(1, "left", speed, turn_ratio)
+
+        elif turn > 0:
+            robot.turn_curve_cm(1, "right", speed, turn_ratio)
+        
+        else:
+            if speed < 0:
+                robot.move_dist(1, "backward", speed)
+            elif speed > 0:
+                robot.move_dist(1, "forward", speed)
