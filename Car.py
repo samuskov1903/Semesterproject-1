@@ -26,7 +26,9 @@ car = CarBle()
 
 car.FindController()
 
-
+while True:
+    message = car.listen
+    print(message)
 
 while True:
     movementList = car.listen()
