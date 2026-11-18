@@ -44,6 +44,14 @@ class ControlBLE:
                 except aioble.DeviceDisconnectedError:
                     # Leave the inner loop and advertise again for another client.
                     break
+    async def send(self, message):
+            """Send bytes to the connected Pico."""
+            if self.char is None:
+                raise RuntimeError("BLE is not connected")
+            # Accept text as a convenience, but always send bytes over BLE.
+            if isinstance(message, str):
+                message = message.encode()
+            await self.char.write(message)
 
 class CarBle:
     """Connect to the robot's BLE service and exchange messages with it."""
@@ -87,14 +95,6 @@ class CarBle:
         self.char = char
         return connection, char
 
-    async def send(self, message):
-        """Send bytes to the connected Pico."""
-        if self.char is None:
-            raise RuntimeError("BLE is not connected")
-        # Accept text as a convenience, but always send bytes over BLE.
-        if isinstance(message, str):
-            message = message.encode()
-        await self.char.write(message)
 
     async def listen(self, handler):
         """Handle notifications without blocking the rest of the controller."""
