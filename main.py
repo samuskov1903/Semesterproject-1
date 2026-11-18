@@ -2,7 +2,7 @@ from time import sleep
 from sensor import Sensor
 from Differential_drive import differentieldrive
 from stepper_motor import StepperMotor
-from controller import Controller
+from controller2 import Controller
 
 
 
