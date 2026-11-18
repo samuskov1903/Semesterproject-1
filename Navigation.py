@@ -69,7 +69,14 @@ class Navigation:
                               "straight", "right", "end"]
         self.rute4frem = ["backward180", "straight", "straight",
                           "right", "left", "straight", "end"]
-        self.rute4tilbage = ["backward180"]
+        self.rute4tilbage = ["backward180", "straight", "right",
+                             "left", "straight", "straight", "end"]
+        self.rute5frem = ["backward180", "straight", "straight", 
+                          "right", "left", "right",
+                          "right", "end"]
+        self.rute5tilbage = ["backward180","left", "left", 
+                            "right", "left", "straight",
+                            "straight", "end"]
         
         if start not in self.PATH_MAP:
             raise ValueError("Unknown starting node: " + start)

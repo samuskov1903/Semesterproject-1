@@ -49,7 +49,7 @@ rute = Navigation(14)
 
 
 
-for i in rute.rute2tilbage :
+for i in rute.rute3tilbage :
     print(i)
     robotfull.drive_to_junction(i, 0.005, robotmicro, ldrleft, ldrright)
     
