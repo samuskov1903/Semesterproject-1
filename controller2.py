@@ -1,5 +1,5 @@
 import asyncio
-from Connect import ControlBLE
+from connect import ControlBLE
 from sensor import Sensor
 
 
