@@ -15,9 +15,9 @@ wheel_base = 24.5
 log_file = "turns.txt"
 
 
-potentiometer_pin = 27
-potentiometer = Sensor(potentiometer_pin)
-joystick_x_pin = 28
+joystick_y_pin = 28
+joystick_y = Sensor(joystick_y_pin)
+joystick_x_pin = 26
 joystick_x = Sensor(joystick_x_pin)
 
 
@@ -39,22 +39,7 @@ robot = differentieldrive(
     wheel_base,
 )
 
-'''
-try:
-    with open(log_file, "w") as log:
-        log.write("Sensor recordings\n")
 
-    sleep(1)
-    ldr.record_turn(robot, "left", log_file)
-
-    sleep(1)
-    ldr.record_turn(robot, "right", log_file)
-finally:
-    ldr.light_led("off")
-    ldr.logging = False
-    ldr.running = False
-    robot.stop()
-    '''
 
 '''try:
     while True:
@@ -79,16 +64,18 @@ except KeyboardInterrupt:
 
 try:
     while True:
-        raw_val = potentiometer.read()
-        retning, nyt_delay, trin = Controller.speed_control(raw_val) 
+        y_val = joystick_y.read()
+        retning, nyt_delay, trin = Controller.speed_control(y_val) 
 
-        print(f"Raw value: {raw_val}, Direction: {retning}, Delay: {nyt_delay:.3f}, Trin: {trin}")
+        
         
     
         x_val = joystick_x.read()
+
+        print(y_val, x_val, retning, nyt_delay, trin)
+     
         x_offset = (x_val - 32768) / 32768.0  # Skalerer værdien til mellem -1.0 og 1.0
-        faktor = 0.02  # Bestemmer hvor voldsomt robotten drejer
-        
+        faktor = 0.02  # Bestemmer hvor voldsomt robotten drejer       
     
         if retning == "stop":
             robot.stop()

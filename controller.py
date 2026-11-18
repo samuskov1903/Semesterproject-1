@@ -4,10 +4,10 @@ import math
 delays = [0.25, 0.166, 0.111, 0.074, 0.049, 0.033, 0.022, 0.014, 0.001]
 
 class Controller:
-    def speed_control(raw_val):
-        raw_val = max(0, min(65535, raw_val))
+    def speed_control(y_val):
+        y_val = max(0, min(65535, y_val))
         zone_størrelse = 65535 / 19
-        zone_indeks = int(raw_val / zone_størrelse)
+        zone_indeks = int(y_val / zone_størrelse)
         if zone_indeks > 18:
             zone_indeks = 18
 
