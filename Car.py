@@ -22,13 +22,16 @@ robot = differentieldrive(
 
 
 async def handle_message(message):
-    #print("Controller message:", message)
     try:
-        parts = message
-        turn = int(parts[0])
-        speed = int(parts[1])
-    except (ValueError, IndexError, AttributeError):
+        text = message.decode()
+        text = text.strip().strip("[]")
+        parts = text.split(",")
+        turn = float(parts[0])
+        speed = float(parts[1])
+    except (UnicodeError, ValueError, IndexError, AttributeError):
         return
+
+    print("Controller values:", turn, speed)
 
     if turn < 0.1:
         print("Hello")
