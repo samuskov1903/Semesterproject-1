@@ -1,37 +1,17 @@
-from time import sleep
-from sensor import Sensor
-from Differential_drive import differentieldrive
+from connect import CarBle
 from stepper_motor import StepperMotor
-from controller2 import Controller
+from Differential_drive import differentieldrive
+import asyncio
 
-
-
-sensor_pin = 28
-sensor_led_pin = 27
 leftmotor_pins = [0, 1, 2, 3]
 rightmotor_pins = [4, 5, 6, 7]
 wheel_diameter = 8.6
 wheel_base = 24.5
-log_file = "turns.txt"
-
-
-
-joystick_y_pin = 28
-joystick_y = Sensor(joystick_y_pin)
-joystick_x_pin = 26
-joystick_x = Sensor(joystick_x_pin)
-
-
-ldr = Sensor(sensor_pin, sensor_led_pin)
-ldr.light_led("on")
-
-
 
 motorleft = StepperMotor(leftmotor_pins, pwm_pct=0.2)
 motorright = StepperMotor(rightmotor_pins, pwm_pct=0.2)
 motorleft.set_step_mode("half")
 motorright.set_step_mode("half")
-
 
 robot = differentieldrive(
     motorleft,
@@ -41,55 +21,49 @@ robot = differentieldrive(
 )
 
 
+async def handle_message(message):
+    try:
+        text = message.decode()
+        text = text.strip().strip("[]")
+        parts = text.split(",")
+        turn = float(parts[0])
+        speed = float(parts[1])
+    except (UnicodeError, ValueError, IndexError, AttributeError):
+        return
 
-'''try:
-    while True:
-        raw_val = potentiometer.read()
-        retning, nyt_delay = Controller.speed_control(raw_val)
-        print(f"Raw value: {raw_val}, Direction: {retning}, Delay: {nyt_delay:.3f}")
-        if retning == "stop":
-            robot.stop()
+    print("Controller values:", turn, speed)
 
-        elif retning == "forward":
-            motorleft.delay = nyt_delay
-            motorright.delay = nyt_delay
-
-        elif retning == "backwards":
-            motorleft.delay = nyt_delay
-            motorright.delay = nyt_delay
-
-        sleep(0.05)
-except KeyboardInterrupt:
-    robot.stop()'''
-
-
-try:
-    while True:
-        y_val = joystick_y.read()
-        retning, nyt_delay, trin = Controller.speed_control(y_val) 
-
+    if turn < 0.1:
+        '''print("Hello")'''
+        robot.turn_on_point_robot_steps(1, "left", 0.01)
+    elif turn > -0.1:
+        '''print("fuck off")'''
+        robot.turn_on_point_robot_steps(1, "right", 0.01)
+    else:
+       ''' print("im stupid")'''
         
-        
-    
-        x_val = joystick_x.read()
+    if speed < 0.1:
+        '''print("back")'''
+        robot.move_dist(1, "backward", 0.01)
+    elif speed > 0.1:
+        '''    print("forward")'''
+        robot.move_dist(1, "forward", 0.01)
+    else:
+     '''   print("im dum")'''
+    print(f"Turn: {turn:.2f}, Speed: {speed:.2f}")
 
-        print(y_val, x_val, retning, nyt_delay, trin)
-     
-        x_offset = (x_val - 32768) / 32768.0  # Skalerer værdien til mellem -1.0 og 1.0
-        faktor = 0.02  # Bestemmer hvor voldsomt robotten drejer       
-    
-        if retning == "stop":
-            robot.stop()
-            
-        elif retning == "forward":
-            motorleft.delay = max(0.001, nyt_delay + (x_offset * faktor))
-            motorright.delay = max(0.001, nyt_delay - (x_offset * faktor))
-            
-        elif retning == "backwards":
-            motorleft.delay = max(0.001, nyt_delay + (x_offset * faktor))
-            motorright.delay = max(0.001, nyt_delay - (x_offset * faktor))
-            
-        sleep(0.05)
 
-except KeyboardInterrupt:
-    robot.stop()
+async def main():
+    while True:
+        car = CarBle()
+        try:
+            print("Searching for controller Pico...")
+            await car.FindController()
+            print("Connected to controller Pico")
+            await car.listen(handle_message)
+        except Exception as error:
+            print("BLE error:", error)
+        await asyncio.sleep(1)
+
+
+asyncio.run(main())

@@ -31,26 +31,15 @@ async def handle_message(message):
     except (UnicodeError, ValueError, IndexError, AttributeError):
         return
 
-    print("Controller values:", turn, speed)
-
-    if turn < 0.1:
-        '''print("Hello")'''
+    if turn < -0.1:
         robot.turn_on_point_robot_steps(1, "left", 0.01)
-    elif turn > -0.1:
-        '''print("fuck off")'''
+    elif turn > 0.1:
         robot.turn_on_point_robot_steps(1, "right", 0.01)
-    else:
-       ''' print("im stupid")'''
-        
-    if speed < 0.1:
-        '''print("back")'''
+    elif speed < -0.1:
         robot.move_dist(1, "backward", 0.01)
     elif speed > 0.1:
-        '''    print("forward")'''
         robot.move_dist(1, "forward", 0.01)
-    else:
-     '''   print("im dum")'''
-    print(f"Turn: {turn:.2f}, Speed: {speed:.2f}")
+
 
 
 async def main():
