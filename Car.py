@@ -30,8 +30,8 @@ async def handle_message(message):
     except (ValueError, IndexError, AttributeError):
         return
 
-    turn_ratio = turn / 1000
     if turn < 0:
+        print("Hello")
         robot.turn_curve_cm(1, "left", speed, turn_ratio)
     elif turn > 0:
         robot.turn_curve_cm(1, "right", speed, turn_ratio)
