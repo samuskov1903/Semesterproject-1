@@ -36,7 +36,7 @@ async def handle_message(message):
     if turn < 0.1:
         print("Hello")
         robot.turn_on_point_robot_steps(1, "left", 0.01)
-    elif turn > 0.1:
+    elif turn > -0.1:
         print("fuck off")
         robot.turn_on_point_robot_steps(1, "right", 0.01)
     else:
