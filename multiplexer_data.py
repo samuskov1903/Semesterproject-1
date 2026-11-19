@@ -5,11 +5,12 @@ from time import sleep_us
 class Multiplexer_data:
     """Run through the selected multiplexer outputs"""
 
-    def __init__(self, sensor_count=6, SelectorPins=[27,26,22],read_pin=28,Activated_Pins=[18,19]):
+    def __init__(self, delay_us=20,  sensor_count=6, SelectorPins=[27,26,22],read_pin=28,Activated_Pins=[18,19]):
         self.s_pins = [Pin(i,Pin.OUT) for i in SelectorPins]
         self.sensor_count=sensor_count
         self.sensor_pin = ADC(read_pin)
         self.sensor_data=[]
+        self.delay_us = delay_us
         self.activated_pins=[Pin(i,Pin.OUT) for i in Activated_Pins]
         for i in self.activated_pins:
             i.value(1)
@@ -23,7 +24,7 @@ class Multiplexer_data:
         sensor_data=[] #clear list, ready for data
         for i in range(self.sensor_count): #repeat for every sensor
             self.select_pinners(i,self.s_pins)
-            sleep_us(20) #buffer time to allow pico to send signal to multiplex, and multiplex to switch output
+            sleep_us(self.delay_us) #buffer time to allow pico to send signal to multiplex, and multiplex to switch output
             sensor_data.append(self.sensor_pin.read_u16()) #append sensor data, n'th sensor outputs to n'th slot in list
         return sensor_data #returns list of all data ready for processing
 
