@@ -24,7 +24,7 @@ robot = differentieldrive(
 async def handle_message(message):
     #print("Controller message:", message)
     try:
-        parts = message.decode().strip("[]").split(",")
+        parts = message
         turn = int(parts[0])
         speed = int(parts[1])
     except (ValueError, IndexError, AttributeError):
