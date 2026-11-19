@@ -45,10 +45,10 @@ class differentieldrive :
     def turn_on_point_robot_steps(self, steps, direction, delay) : # Turn in place using both wheels.
             try:
                 for _ in range(round(steps)):
-                    if direction == "right":
+                    if direction == "left":
                         self.motorright.step_once("forward")
                         self.motorleft.step_once("backward")            
-                    elif direction == "left" :
+                    elif direction == "right" :
                         self.motorright.step_once("backward")
                         self.motorleft.step_once("forward")
                     sleep(delay)
@@ -118,33 +118,49 @@ class differentieldrive :
             elif ldrleft.bin_read(switch, threshold) == 0:
                 robotmicro.turn_curve_cm(turn_amount, "right", turn_delay, ratio)
             self.move_dist(move_amount, "forward", move_delay)
-    def drive_to_junction(self, direction, number , delay, robotmicro, ldrleft, ldrright, sensor_wheel_distance=16, switch=30000, threshold=2000):
-        k = 1
+    def drive_to_junction(self, direction, delay, robotmicro, ldrleft, ldrright, sensor_wheel_distance=16, switch=30000, threshold=2000):
         turned = False
-        if number > 1:
-            while k < number :
-                if ldrleft.bin_read(switch, threshold) == 0 or ldrright.bin_read(switch, threshold)==0:
-                    k=k+1
-                    self.move_dist(5, "forward", delay)
-                self.move_dist(1, "forward", delay)
         if direction == "left" :
             while turned == False:
                 self.move_dist(1,"forward", delay)
                 if ldrleft.bin_read(switch, threshold) == 0:
                     self.move_dist(sensor_wheel_distance, "forward", delay)
-                    robotmicro.turn_on_point_robot_angle(90, "right", delay)
+                    robotmicro.turn_on_point_robot_angle(90, "left", delay)
                     turned = True     
         elif direction == "right" :
             while turned == False:
                 self.move_dist(1, "forward", delay)
                 if ldrright.bin_read(switch, threshold) == 0:
                     self.move_dist(sensor_wheel_distance, "forward", delay)
-                    robotmicro.turn_on_point_robot_angle(90, "left", delay)
+                    robotmicro.turn_on_point_robot_angle(90, "right", delay)
+                    turned = True
+        if direction == "left45" :
+            while turned == False:
+                self.move_dist(1,"forward", delay)
+                if ldrleft.bin_read(switch, threshold) == 0:
+                    self.move_dist(sensor_wheel_distance, "forward", delay)
+                    robotmicro.turn_on_point_robot_angle(45, "left", delay)
+                    turned = True     
+        elif direction == "right45" :
+            while turned == False:
+                self.move_dist(1, "forward", delay)
+                if ldrright.bin_read(switch, threshold) == 0:
+                    self.move_dist(sensor_wheel_distance, "forward", delay)
+                    robotmicro.turn_on_point_robot_angle(45, "right", delay)
                     turned = True
         elif direction == "end" :
             while turned == False:
                 self.move_dist(1, "forward", delay)
                 if ldrright.bin_read(switch, threshold) == 0 or ldrleft.bin_read(switch, threshold) == 0:
                     turned = True
+        elif direction == "straight" :
+            while turned == False:
+                self.move_dist(1, "forward", delay)
+                if ldrright.bin_read(switch, threshold) == 0 or ldrleft.bin_read(switch, threshold) == 0:
+                    turned = True
+                    self.move_dist(sensor_wheel_distance,"forward", delay)
+        elif direction == "backward180":
+            self.move_dist(5, "backward", delay)
+            self.turn_on_point_robot_angle(180, "left", delay)
         self.stop()
         
