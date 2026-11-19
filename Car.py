@@ -35,7 +35,7 @@ async def handle_message(message):
         robot.turn_curve_cm(1, "left", speed)
     elif turn > 0.1:
         print("fuck off")
-        robot.turn_curve_cm(1, "right", speed, turn_ratio)
+        robot.turn_curve_cm(1, "right", speed)
     elif speed < 0.1:
         print("back")
         robot.move_dist(1, "backward", speed)
