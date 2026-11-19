@@ -2,7 +2,7 @@ from time import sleep
 from sensor import Sensor
 from Differential_drive import differentieldrive
 from stepper_motor import StepperMotor
-from controller import Controller
+from OldController import Controller
 
 
 
@@ -82,7 +82,7 @@ try:
         raw_val = potentiometer.read()
         retning, nyt_delay, trin = Controller.speed_control(raw_val) 
 
-        print(f"Raw value: {raw_val}, Direction: {retning}, Delay: {nyt_delay:.3f}, Trin: {trin}")
+       
         
     
         x_val = joystick_x.read()
