@@ -94,8 +94,3 @@ class Navigation:
             )
         self.current_node = self.PATH_MAP[self.current_node][direction]
         return self.current_node
-    def toggle_magnet(self, status):
-        if status == "on":
-            self.elektropin.on()
-        elif status == "off":
-            self.elektropin.off()
