@@ -1,4 +1,8 @@
-  zone_størrelse = 65535 / 19
+delays = [0.25, 0.166, 0.111, 0.074, 0.049, 0.033, 0.022, 0.014, 0.001]
+
+def speed_control(raw_val):
+    raw_val = max(0, min(65535, raw_val))  
+    zone_størrelse = 65535 / 19
     zone_indeks = int(raw_val / zone_størrelse)
     if zone_indeks > 18:
         zone_indeks = 18
