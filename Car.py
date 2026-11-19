@@ -29,7 +29,7 @@ async def handle_message(message):
         speed = int(parts[1])
     except (ValueError, IndexError, AttributeError):
         return
-
+'''
     if turn < 0.1:
         print("Hello")
         robot.turn_on_point_robot_steps(1, "left", 0.01)
@@ -43,7 +43,7 @@ async def handle_message(message):
         print("forward")
         robot.move_dist(1, "forward", 0.01)
     else:
-        print("im dum")
+        print("im dum")'''
 
 
 async def main():
