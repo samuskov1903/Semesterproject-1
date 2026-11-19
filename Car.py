@@ -30,16 +30,16 @@ async def handle_message(message):
     except (ValueError, IndexError, AttributeError):
         return
 
-    if turn < 0:
+    if turn < 0.1:
         print("Hello")
-        robot.turn_curve_cm(1, "left", speed, turn_ratio)
-    elif turn > 0:
+        robot.turn_curve_cm(1, "left", speed)
+    elif turn > 0.1:
         print("fuck off")
         robot.turn_curve_cm(1, "right", speed, turn_ratio)
-    elif speed < 0:
+    elif speed < 0.1:
         print("back")
         robot.move_dist(1, "backward", speed)
-    elif speed > 0:
+    elif speed > 0.1:
         print("forward")
         robot.move_dist(1, "forward", speed)
     else:
