@@ -1,4 +1,4 @@
-from Connect import CarBle
+from connect import CarBle
 from stepper_motor import StepperMotor
 from Differential_drive import differentieldrive
 import asyncio
@@ -42,9 +42,16 @@ async def handle_message(message):
 
 
 async def main():
-    car = CarBle()
-    await car.FindController()
-    await car.listen(handle_message)
+    while True:
+        car = CarBle()
+        try:
+            print("Searching for controller Pico...")
+            await car.FindController()
+            print("Connected to controller Pico")
+            await car.listen(handle_message)
+        except Exception as error:
+            print("BLE error:", error)
+        await asyncio.sleep(1)
 
 
 asyncio.run(main())

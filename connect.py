@@ -54,6 +54,7 @@ class ControlBLE:
             message = message.encode()
         elif isinstance(message, list):
             message = repr(message).encode()
+        print("Sending:", message)
         self.char.notify(self.connection, message)
 
 class CarBle:
@@ -96,6 +97,7 @@ class CarBle:
 
         self.connection = connection
         self.char = char
+        print(connection)
         return connection, char
 
 
