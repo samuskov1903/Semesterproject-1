@@ -31,7 +31,6 @@ async def handle_message(message):
     except (UnicodeError, ValueError, IndexError, AttributeError):
         return
 
-    print("Controller values:", turn, speed)
 
     if turn < 0.1:
         '''print("Hello")'''
