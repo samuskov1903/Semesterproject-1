@@ -42,6 +42,8 @@ async def handle_message(message):
     elif speed > 0:
         print("forward")
         robot.move_dist(1, "forward", speed)
+    else:
+        print("im dum")
 
 
 async def main():
