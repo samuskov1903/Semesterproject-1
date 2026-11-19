@@ -97,7 +97,7 @@ class CarBle:
 
         self.connection = connection
         self.char = char
-        print(connection)
+        #print(connection)
         return connection, char
 
 

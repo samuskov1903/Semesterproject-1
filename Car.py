@@ -22,7 +22,7 @@ robot = differentieldrive(
 
 
 async def handle_message(message):
-    print("Controller message:", message)
+    #print("Controller message:", message)
     try:
         parts = message.decode().strip("[]").split(",")
         turn = int(parts[0])
@@ -34,10 +34,13 @@ async def handle_message(message):
         print("Hello")
         robot.turn_curve_cm(1, "left", speed, turn_ratio)
     elif turn > 0:
+        print("fuck off")
         robot.turn_curve_cm(1, "right", speed, turn_ratio)
     elif speed < 0:
+        print("back")
         robot.move_dist(1, "backward", speed)
     elif speed > 0:
+        print("forward")
         robot.move_dist(1, "forward", speed)
 
 
