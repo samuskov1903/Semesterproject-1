@@ -73,12 +73,15 @@ class CarBle:
         # Scan for up to five seconds. Active scanning asks devices for extra
         # advertising data, including the advertised name and service UUID.
         async with aioble.scan(
-            5000, interval_us=30000, window_us=15000, active=False
+            5000, interval_us=30000, window_us=15000, active=True
         ) as scanner:
             async for result in scanner:
+                name = result.name()
+                if name:
+                    print("Found BLE device:", name)
                 # Only accept the intended device, and verify that it offers the
                 # service this client needs.
-                if result.name() == "pico-b" and self.SERVICE_UUID in result.services():
+                if name == "pico-b" and self.SERVICE_UUID in result.services():
                     return result.device
                 # No matching device was found during this scan.
             return None 
@@ -89,6 +92,8 @@ class CarBle:
         while device is None:
             print("Scanning...")
             device = await self.connect()
+            if device is None:
+                await asyncio.sleep(1)
     
         # Resolve the service and characteristic exposed by the robot.
         connection = await device.connect()

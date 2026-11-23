@@ -13,6 +13,7 @@ joystick_x = Sensor(joystick_x_pin)
 async def main():
     asyncio.create_task(controller.advertise())
     connected = False
+    disconnected = False
     while True:
         is_connected = (
             controller.connection is not None
@@ -20,10 +21,16 @@ async def main():
         )
         if is_connected and not connected:
             print("Connected to car")
+            disconnected = False
+        elif not is_connected and not disconnected:
+            print("Waiting for connection to car...")
+            disconnected = True
         connected = is_connected
 
-      
-    
+        if not is_connected:
+            await asyncio.sleep_ms(500)
+            continue
+
         y_val = joystick_y.read()
         x_val = joystick_x.read()
              
