@@ -2,32 +2,49 @@ from connect import CarBle
 from stepper_motor import StepperMotor
 from Differential_drive import differentieldrive
 import asyncio
+from machine import Pin
+from time import ticks_ms, ticks_diff
 
 leftmotor_pins = [0, 1, 2, 3]
 rightmotor_pins = [4, 5, 6, 7]
-wheel_diameter = 8.6
-wheel_base = 24.5
 
 motorleft = StepperMotor(leftmotor_pins, pwm_pct=0.2)
 motorright = StepperMotor(rightmotor_pins, pwm_pct=0.2)
 motorleft.set_step_mode("half")
 motorright.set_step_mode("half")
 
-robot = differentieldrive(
-    motorleft,
-    motorright,
-    wheel_diameter,
-    wheel_base,
-)
+robot = differentieldrive(motorleft, motorright, 8.6, 24.5)
+
+button = Pin("GP18", Pin.IN, Pin.PULL_DOWN)
+button_power = Pin("GP19", Pin.OUT)
+button_power.value(1)
+
+running = True
+last_press_ms = 0
+
+
+def button_pressed(pin):
+    global running, last_press_ms
+
+    now = ticks_ms()
+    if pin.value() == 1 and ticks_diff(now, last_press_ms) > 100:
+        last_press_ms = now
+        running = False
+        robot.emergency_stop()
+        print("STOP")
+
+
+button.irq(trigger=Pin.IRQ_RISING, handler=button_pressed)
 
 
 async def handle_message(message):
+    if not running:
+        robot.stop()
+        return
+
     try:
-        text = message.decode()
-        text = text.strip().strip("[]")
-        parts = text.split(",")
-        turn = float(parts[0])
-        speed = float(parts[1])
+        text = message.decode().strip().strip("[]")
+        turn, speed = map(float, text.split(","))
     except (UnicodeError, ValueError, IndexError, AttributeError):
         return
 
@@ -41,18 +58,30 @@ async def handle_message(message):
         robot.move_dist(1, "forward", 0.005)
 
 
-
 async def main():
-    while True:
+    car = None
+
+    while running:
         car = CarBle()
+
         try:
-            print("Searching for controller Pico...")
+            print("Searching...")
             await car.FindController()
-            print("Connected to controller Pico")
+            print("Connected")
             await car.listen(handle_message)
         except Exception as error:
             print("BLE error:", error)
+
+        if car.connection is not None:
+            try:
+                await car.connection.disconnect()
+            except Exception:
+                pass
+
         await asyncio.sleep(1)
+
+    robot.stop()
+    print("Stopped and disconnected")
 
 
 asyncio.run(main())

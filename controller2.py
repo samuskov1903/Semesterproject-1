@@ -42,6 +42,7 @@ async def main():
         # Read 16-bit ADC values (0 to 65535).
         y_val = joystick_y.read()
         x_val = joystick_x.read()
+        print(x_val)
 
         # Convert the ADC values to joystick offsets from -1.0 to 1.0.
         x_offset = (x_val - 32768) / 32768.0  # Skalerer værdien til mellem -1.0 og 1.0

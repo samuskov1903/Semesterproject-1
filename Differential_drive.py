@@ -12,12 +12,18 @@ class differentieldrive :
         self.wheel_base = wheel_base
         self.wheel_circumfrence = self.wheel_base * math.pi
         self.wheel_rev = self.wheel_circumfrence/(self.wheel_dia*math.pi)
+        self.running = True
 
 
     def stop(self):
         # Turn off both motors.
         self.motorleft.stop()
         self.motorright.stop()  
+
+    def emergency_stop(self):
+        # Mark the robot stopped and interrupt any blocking movement loop.
+        self.running = False
+        self.stop()
         
     def turn_on_wheel_robot_steps(self, steps, direction, delay) : # Turn around one wheel for a specified number of steps.
             # Move only the wheel on the outside of the turn.
@@ -45,6 +51,8 @@ class differentieldrive :
     def turn_on_point_robot_steps(self, steps, direction, delay) : # Turn in place using both wheels.
             try:
                 for _ in range(round(steps)):
+                    if not self.running:
+                        break
                     if direction == "right":
                         self.motorright.step_once("forward")
                         self.motorleft.step_once("backward")            
@@ -68,6 +76,8 @@ class differentieldrive :
         # Use each motor's step index to preserve its current phase.
         try:
             for _ in range(round(steps)):
+                if not self.running:
+                    break
                 self.motorright.step_once(direction)
                 self.motorleft.step_once(direction)
                 sleep(delay)
