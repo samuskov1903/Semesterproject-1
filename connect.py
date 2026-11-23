@@ -8,48 +8,56 @@ class ControlBLE:
     """Provide the robot's BLE service and receive messages from a controller."""
 
     def __init__(self):
-        # Both endpoints must use the same custom 128-bit UUIDs.
+        # Both Picos must use the same service and characteristic UUIDs.
         self.SERVICE_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef0")
         self.CHAR_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef1")
         self.MESSAGE_INTERVAL = 0
+
+        # Create the BLE service and notification characteristic.
         self.service = aioble.Service(self.SERVICE_UUID)
-        # The characteristic supports reading, writing, and notifications.
         self.char = aioble.Characteristic(
             self.service, self.CHAR_UUID, read=True, write=True, notify=True, capture=True
         )
         self.connection = None
+
         # Make the service available to connected BLE clients.
         aioble.register_services(self.service)
     
     async def advertise(self):
         """Advertise the robot and process messages from connected clients."""
         while True:
-            # Advertise until a client, such as pico_a, connects.
+            # The robot Pico scans for this name and service.
             print("Advertising...")
             connection = await aioble.advertise(
                 250_000, name="pico-b", services=[self.SERVICE_UUID]
             )
             print("Connected to", connection.device)
             self.connection = connection
-            # Send a notification back to the connected client.
+
+            # Send an initial notification after connecting.
             self.char.notify(connection, b"pong")
             
-            # Handle messages while the client remains connected.
+            # Keep the connection active until the client disconnects.
             while connection.is_connected():
                 try:
-                    # Wait up to one second for the client to write data.
+                    # Wait for a BLE write from the robot Pico.
                     _, data = await self.char.written(timeout_ms=1000)
                     print("B received:", data)
                 except asyncio.TimeoutError:
-                    # No message arrived; keep waiting for the next one.
+                    # A timeout is normal and does not mean the BLE link is lost.
                     pass
                 except aioble.DeviceDisconnectedError:
-                    # Leave the inner loop and advertise again for another client.
+                    # Clear the stale connection and advertise again.
+                    self.connection = None
                     break
+
     def send(self, message):
         """Send bytes to the connected Pico."""
+        # Refuse to send if there is no live BLE connection.
         if self.connection is None or not self.connection.is_connected():
             raise RuntimeError("BLE is not connected")
+
+        # Convert text or lists into bytes for BLE notification.
         if isinstance(message, str):
             message = message.encode()
         elif isinstance(message, list):
@@ -61,6 +69,7 @@ class CarBle:
     """Connect to the robot's BLE service and exchange messages with it."""
 
     def __init__(self):
+        # These UUIDs must match ControlBLE on the controller Pico.
         self.SERVICE_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef0")
         self.CHAR_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef1")
         self.MESSAGE_INTERVAL = 0
@@ -79,11 +88,10 @@ class CarBle:
                 name = result.name()
                 if name:
                     print("Found BLE device:", name)
-                # Only accept the intended device, and verify that it offers the
-                # service this client needs.
+
+                # Require both the expected name and service UUID.
                 if name == "pico-b" and self.SERVICE_UUID in result.services():
                     return result.device
-                # No matching device was found during this scan.
             return None 
             
     async def FindController(self):
@@ -93,18 +101,19 @@ class CarBle:
             print("Scanning...")
             device = await self.connect()
             if device is None:
+                # Avoid starting a new scan immediately when none is found.
                 await asyncio.sleep(1)
     
-        # Resolve the service and characteristic exposed by the robot.
+        # Connect and resolve the remote service and characteristic.
         connection = await device.connect()
         service = await connection.service(self.SERVICE_UUID)
         char = await service.characteristic(self.CHAR_UUID)
+
         # Subscribe so listen() can receive notifications from the robot.
         await char.subscribe(notify=True)
 
         self.connection = connection
         self.char = char
-        #print(connection)
         return connection, char
 
 
