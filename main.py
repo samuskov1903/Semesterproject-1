@@ -4,8 +4,8 @@ from Differential_drive import differentieldrive
 import asyncio
 from machine import Pin
 from time import ticks_ms, ticks_diff
-from time import sleep
-from OldController import Controller
+from sys import exit
+
 
 leftmotor_pins = [0, 1, 2, 3]
 rightmotor_pins = [4, 5, 6, 7]
@@ -32,17 +32,14 @@ def button_pressed(pin):
     if pin.value() == 1 and ticks_diff(now, last_press_ms) > 100:
         last_press_ms = now
         running = False
-        robot.stop()
+        robot.emergency_stop()
         print("STOP")
-
+        
 
 button.irq(trigger=Pin.IRQ_RISING, handler=button_pressed)
 
 
 async def handle_message(message):
-    if not running:
-        robot.stop()
-        return
 
     try:
         text = message.decode().strip().strip("[]")
@@ -69,6 +66,24 @@ async def handle_message(message):
 
 
 async def main():
+    car = None
+
+    async def disconnect_on_stop():
+        while True:
+            if not running:
+                if car is not None and car.connection is not None:
+                    try:
+                        if car.connection.is_connected():
+                            await car.connection.disconnect()
+                            print("BLE disconnected")
+                    except Exception as error:
+                        print("BLE disconnect error:", error)
+                robot.stop()
+                return
+            await asyncio.sleep_ms(50)
+
+    asyncio.create_task(disconnect_on_stop())
+
     while running:
         car = CarBle()
         try:
@@ -79,11 +94,8 @@ async def main():
         except Exception as error:
             print("BLE error:", error)
 
-        if car.connection is not None:
-            try:
-                await car.connection.disconnect()
-            except Exception:
-                pass
+        if not running:
+            break
 
         await asyncio.sleep(1)
 
