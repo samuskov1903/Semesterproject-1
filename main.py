@@ -32,7 +32,7 @@ def button_pressed(pin):
     if pin.value() == 1 and ticks_diff(now, last_press_ms) > 100:
         last_press_ms = now
         running = False
-        robot.emergency_stop()
+        robot.stop()
         print("STOP")
 
 
@@ -55,9 +55,17 @@ async def handle_message(message):
     elif turn > 0.1:
         robot.turn_on_point_robot_angle(1, "left", 0.01)
     elif speed < -0.1:
-        robot.move_dist(1, "backward", 0.005)
+        if speed < -0.6:
+            robot.move_dist(1, "backward", 0.005)
+        elif speed < -0.1:
+            robot.move_dist(1, "backward", 0.01)
     elif speed > 0.1:
-        robot.move_dist(1, "forward", 0.005)
+        if speed > 0.6:
+            robot.move_dist(1, "forward", 0.005)
+        elif speed > 0.1:
+            robot.move_dist(1, "forward", 0.01)
+        
+        
 
 
 async def main():
