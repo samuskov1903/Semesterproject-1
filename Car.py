@@ -32,13 +32,13 @@ async def handle_message(message):
         return
 
     if turn < -0.1:
-        robot.turn_on_point_robot_steps(1, "left", 0.01)
+        robot.turn_on_point_robot_angle(1, "right", 0.01)
     elif turn > 0.1:
-        robot.turn_on_point_robot_steps(1, "right", 0.01)
+        robot.turn_on_point_robot_angle(1, "left", 0.01)
     elif speed < -0.1:
-        robot.move_dist(1, "backward", 0.01)
+        robot.move_dist(1, "backward", 0.005)
     elif speed > 0.1:
-        robot.move_dist(1, "forward", 0.01)
+        robot.move_dist(1, "forward", 0.005)
 
 
 

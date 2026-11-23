@@ -6,11 +6,11 @@ from sensor import Sensor
 controller = ControlBLE()
 
 # Read the vertical joystick axis from ADC pin 28.
-joystick_y_pin = 28
+joystick_y_pin = 26
 joystick_y = Sensor(joystick_y_pin)
 
 # Read the horizontal joystick axis from ADC pin 26.
-joystick_x_pin = 26
+joystick_x_pin = 28
 joystick_x = Sensor(joystick_x_pin)
 
 async def main():
