@@ -4,6 +4,8 @@ from Differential_drive import differentieldrive
 import asyncio
 from machine import Pin
 from time import ticks_ms, ticks_diff
+from time import sleep
+from OldController import Controller
 
 leftmotor_pins = [0, 1, 2, 3]
 rightmotor_pins = [4, 5, 6, 7]
@@ -59,11 +61,8 @@ async def handle_message(message):
 
 
 async def main():
-    car = None
-
     while running:
         car = CarBle()
-
         try:
             print("Searching...")
             await car.FindController()

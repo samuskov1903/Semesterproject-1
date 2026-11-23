@@ -36,14 +36,12 @@ robot = differentieldrive(
 
 try:
     while True:
-        raw_val = potentiometer.read()
-        retning, nyt_delay, trin = Controller.speed_control(raw_val) 
+        retning, nyt_delay, trin = Controller.speed_control(speed) 
 
        
         
     
-        x_val = joystick_x.read()
-        x_offset = (x_val - 32768) / 32768.0  # Skalerer værdien til mellem -1.0 og 1.0
+
         faktor = 0.02  # Bestemmer hvor voldsomt robotten drejer
         
     
@@ -51,12 +49,12 @@ try:
             robot.stop()
             
         elif retning == "forward":
-            motorleft.delay = max(0.001, nyt_delay + (x_offset * faktor))
-            motorright.delay = max(0.001, nyt_delay - (x_offset * faktor))
+            motorleft.delay = max(0.001, nyt_delay + (turn * faktor))
+            motorright.delay = max(0.001, nyt_delay - (turn * faktor))
             
         elif retning == "backwards":
-            motorleft.delay = max(0.001, nyt_delay + (x_offset * faktor))
-            motorright.delay = max(0.001, nyt_delay - (x_offset * faktor))
+            motorleft.delay = max(0.001, nyt_delay + (turn * faktor))
+            motorright.delay = max(0.001, nyt_delay - (turn * faktor))
             
         sleep(0.05)
 
