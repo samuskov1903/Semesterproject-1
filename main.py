@@ -2,6 +2,8 @@ from connect import CarBle
 from stepper_motor import StepperMotor
 from Differential_drive import differentieldrive
 import asyncio
+from time import sleep
+from OldController import Controller
 
 leftmotor_pins = [0, 1, 2, 3]
 rightmotor_pins = [4, 5, 6, 7]
@@ -33,29 +35,32 @@ async def handle_message(message):
 
     print("Controller values:", turn, speed)
 
-    if turn < 0.1:
-        '''print("Hello")'''
-        robot.turn_on_point_robot_steps(1, "left", 0.01)
-    elif turn > -0.1:
-        '''print("fuck off")'''
-        robot.turn_on_point_robot_steps(1, "right", 0.01)
-    else:
-       ''' print("im stupid")'''
+    try:
+        retning, nyt_delay, trin = Controller.speed_control(speed) 
+
+        faktor = 0.02  # Bestemmer hvor voldsomt robotten drejer
         
-    if speed < 0.1:
-        '''print("back")'''
-        robot.move_dist(1, "backward", 0.01)
-    elif speed > 0.1:
-        '''    print("forward")'''
-        robot.move_dist(1, "forward", 0.01)
-    else:
-     '''   print("im dum")'''
-    print(f"Turn: {turn:.2f}, Speed: {speed:.2f}")
+    
+        if retning == "stop":
+            robot.stop()
+            
+        elif retning == "forward":
+            motorleft.delay = max(0.001, nyt_delay + (turn * faktor))
+            motorright.delay = max(0.001, nyt_delay - (turn * faktor))
+            
+        elif retning == "backwards":
+            motorleft.delay = max(0.001, nyt_delay + (turn * faktor))
+            motorright.delay = max(0.001, nyt_delay - (turn * faktor))
+            
+        sleep(0.05)
+
+    except KeyboardInterrupt:
+        robot.stop()
 
 
 async def main():
+    car = CarBle()
     while True:
-        car = CarBle()
         try:
             print("Searching for controller Pico...")
             await car.FindController()
