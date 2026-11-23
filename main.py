@@ -33,29 +33,15 @@ async def handle_message(message):
     except (UnicodeError, ValueError, IndexError, AttributeError):
         return
 
-    print("Controller values:", turn, speed)
+    if turn < -0.1:
+        robot.turn_on_point_robot_angle(1, "right", 0.01)
+    elif turn > 0.1:
+        robot.turn_on_point_robot_angle(1, "left", 0.01)
+    elif speed < -0.1:
+        robot.move_dist(1, "backward", 0.005)
+    elif speed > 0.1:
+        robot.move_dist(1, "forward", 0.005)
 
-    try:
-        retning, nyt_delay, trin = Controller.speed_control(speed) 
-
-        faktor = 0.02  # Bestemmer hvor voldsomt robotten drejer
-        
-    
-        if retning == "stop":
-            robot.stop()
-            
-        elif retning == "forward":
-            motorleft.delay = max(0.001, nyt_delay + (turn * faktor))
-            motorright.delay = max(0.001, nyt_delay - (turn * faktor))
-            
-        elif retning == "backwards":
-            motorleft.delay = max(0.001, nyt_delay + (turn * faktor))
-            motorright.delay = max(0.001, nyt_delay - (turn * faktor))
-            
-        sleep(0.05)
-
-    except KeyboardInterrupt:
-        robot.stop()
 
 
 async def main():
