@@ -26,30 +26,34 @@ class ControlBLE:
     async def advertise(self):
         """Advertise the robot and process messages from connected clients."""
         while True:
-            # The robot Pico scans for this name and service.
+            # The car Pico scans for this name and service.
             print("Advertising...")
-            connection = await aioble.advertise(
-                250_000, name="pico-b", services=[self.SERVICE_UUID]
-            )
-            print("Connected to", connection.device)
-            self.connection = connection
+            self.connection = None
+            try:
+                connection = await aioble.advertise(
+                    250_000, name="pico-b", services=[self.SERVICE_UUID]
+                )
+                print("Connected to", connection.device)
+                self.connection = connection
 
-            # Send an initial notification after connecting.
-            self.char.notify(connection, b"pong")
-            
-            # Keep the connection active until the client disconnects.
-            while connection.is_connected():
-                try:
-                    # Wait for a BLE write from the robot Pico.
-                    _, data = await self.char.written(timeout_ms=1000)
-                    print("B received:", data)
-                except asyncio.TimeoutError:
-                    # A timeout is normal and does not mean the BLE link is lost.
-                    pass
-                except aioble.DeviceDisconnectedError:
-                    # Clear the stale connection and advertise again.
-                    self.connection = None
-                    break
+                # Send an initial notification after connecting.
+                self.char.notify(connection, b"pong")
+
+                # Keep the connection active until the client disconnects.
+                while connection.is_connected():
+                    try:
+                        # Wait for a BLE write from the robot Pico.
+                        _, data = await self.char.written(timeout_ms=1000)
+                        print("B received:", data)
+                    except asyncio.TimeoutError:
+                        # A timeout is normal and does not mean the BLE link is lost.
+                        pass
+                    except aioble.DeviceDisconnectedError:
+                        break
+            except aioble.DeviceDisconnectedError:
+                pass
+            finally:
+                self.connection = None
 
     def send(self, message):
         """Send bytes to the connected Pico."""
@@ -63,7 +67,11 @@ class ControlBLE:
         elif isinstance(message, list):
             message = repr(message).encode()
         print("Sending:", message)
-        self.char.notify(self.connection, message)
+        try:
+            self.char.notify(self.connection, message)
+        except aioble.DeviceDisconnectedError:
+            self.connection = None
+            raise RuntimeError("BLE is not connected")
 
 class CarBle:
     """Connect to the robot's BLE service and exchange messages with it."""
@@ -89,8 +97,9 @@ class CarBle:
                 if name:
                     print("Found BLE device:", name)
 
-                # Require both the expected name and service UUID.
-                if name == "pico-b" and self.SERVICE_UUID in result.services():
+                # Some aioble builds do not include both fields in every
+                # scan response, so accept either identifier.
+                if name == "pico-b" or self.SERVICE_UUID in result.services():
                     return result.device
             return None 
             
@@ -103,11 +112,16 @@ class CarBle:
             if device is None:
                 # Avoid starting a new scan immediately when none is found.
                 await asyncio.sleep(1)
-    
+
         # Connect and resolve the remote service and characteristic.
         connection = await device.connect()
-        service = await connection.service(self.SERVICE_UUID)
-        char = await service.characteristic(self.CHAR_UUID)
+        try:
+            service = await connection.service(self.SERVICE_UUID)
+            char = await service.characteristic(self.CHAR_UUID)
+        except BaseException:
+            if connection.is_connected():
+                await connection.disconnect()
+            raise
 
         # Subscribe so listen() can receive notifications from the robot.
         await char.subscribe(notify=True)
@@ -123,12 +137,16 @@ class CarBle:
             raise RuntimeError("BLE is not connected")
 
         # Wait for notifications until the remote device disconnects.
-        while self.connection.is_connected():
-            try:
-                data = await self.char.notified()
-                await handler(data)
-            except aioble.DeviceDisconnectedError:
-                break
+        try:
+            while self.connection.is_connected():
+                try:
+                    data = await self.char.notified()
+                    await handler(data)
+                except aioble.DeviceDisconnectedError:
+                    break
+        finally:
+            self.connection = None
+            self.char = None
 
 
     
