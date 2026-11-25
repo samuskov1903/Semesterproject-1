@@ -8,10 +8,9 @@ class ControlBLE:
     """Provide the robot's BLE service and receive messages from a controller."""
 
     def __init__(self):
-        # Both Picos must use the same service and characteristic UUIDs.
+        # Both Picos must use matching service and characteristic UUIDs.
         self.SERVICE_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef0")
         self.CHAR_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef1")
-        self.MESSAGE_INTERVAL = 0
 
         # Create the BLE service and notification characteristic.
         self.service = aioble.Service(self.SERVICE_UUID)
@@ -26,7 +25,7 @@ class ControlBLE:
     async def advertise(self):
         """Advertise the robot and process messages from connected clients."""
         while True:
-            # The car Pico scans for this name and service.
+            # Advertise this device for discovery by the car Pico.
             print("Advertising...")
             self.connection = None
             try:
@@ -61,7 +60,7 @@ class ControlBLE:
         if self.connection is None or not self.connection.is_connected():
             raise RuntimeError("BLE is not connected")
 
-        # Convert text or lists into bytes for BLE notification.
+        # Convert supported message types into bytes for notification.
         if isinstance(message, str):
             message = message.encode()
         elif isinstance(message, list):
@@ -80,7 +79,6 @@ class CarBle:
         # These UUIDs must match ControlBLE on the controller Pico.
         self.SERVICE_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef0")
         self.CHAR_UUID = bluetooth.UUID("12345678-1234-5678-1234-56789abcdef1")
-        self.MESSAGE_INTERVAL = 0
         self.connection = None
         self.char = None
         
@@ -113,7 +111,7 @@ class CarBle:
                 # Avoid starting a new scan immediately when none is found.
                 await asyncio.sleep(1)
 
-        # Connect and resolve the remote service and characteristic.
+        # Connect and resolve the matching service and characteristic.
         connection = await device.connect()
         try:
             service = await connection.service(self.SERVICE_UUID)
@@ -136,7 +134,7 @@ class CarBle:
         if self.char is None:
             raise RuntimeError("BLE is not connected")
 
-        # Wait for notifications until the remote device disconnects.
+        # Pass each notification to the handler until the link drops.
         try:
             while self.connection.is_connected():
                 try:

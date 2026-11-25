@@ -1,5 +1,4 @@
 from machine import Pin, PWM
-from time import sleep
 import math
 class StepperMotor:
     def __init__(self, pins, pwm_pct=0.15, frequency=20_000):
@@ -31,7 +30,6 @@ class StepperMotor:
         self.current_mode = "full"
         self.sequence = self.modes[self.current_mode]
         self.step_index = 0
-        self.total_steps = 0
 
     def set_step_mode(self, mode):
         if isinstance(mode, int):
@@ -57,40 +55,13 @@ class StepperMotor:
         self.set_step(self.sequence[self.step_index])
         if direction == "forward":
             self.step_index = (self.step_index + 1) % len(self.sequence)
-            self.total_steps += 1
         else:
             self.step_index = (self.step_index - 1) % len(self.sequence)
-            self.total_steps -= 1
 
     def stop(self):
         for output in self.outputs:
             output.duty_u16(0)
 
-    def move_stepper(self, steps, direction="forward", delay=0.01):
-        if direction not in ["forward", "backward"]:
-            raise ValueError("Fejl: Retningen skal være 'forward' eller 'backward'.")
-        if not isinstance(steps, int) or steps < 0:
-            raise ValueError("Fejl: Antallet af skridt skal være et ikke-negativt heltal.")
-        if not isinstance(delay, (int, float)) or delay < 0:
-            raise ValueError("Fejl: Forsinkelsen skal være et ikke-negativt tal.")
-        if delay < 0.002:
-            delay = 0.002
-
-        try:
-            for _ in range(steps):
-                self.step_once(direction)
-                sleep(delay)
-        finally:
-            self.stop()
-    def run_continuous(self, direction="forward", delay=0.01):
-        print("Kører kontinuerligt... Tryk ctrl + c for at afbryde.")
-        try:
-            while True:
-                self.move_stepper(8, direction=direction, delay=delay)
-        except KeyboardInterrupt:
-            print("\nRotation afbrudt.")
-        finally:
-            self.stop()
     def generate_microstep_sequence(self, microsteps):
         """
         Generate and return a complete microstep sequence.

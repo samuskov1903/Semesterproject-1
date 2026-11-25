@@ -2,18 +2,19 @@ import asyncio
 from connect import ControlBLE
 from sensor import Sensor
 
-# This Pico is the BLE server and joystick controller.
+# This Pico advertises the BLE service and sends joystick commands to the car.
 controller = ControlBLE()
 
-# Read the vertical joystick axis from ADC pin 28.
+# Read the vertical joystick axis from ADC pin 26.
 joystick_y_pin = 26
 joystick_y = Sensor(joystick_y_pin)
 
-# Read the horizontal joystick axis from ADC pin 26.
+# Read the horizontal joystick axis from ADC pin 28.
 joystick_x_pin = 28
 joystick_x = Sensor(joystick_x_pin)
 
 async def main():
+    """Advertise the controller and send joystick readings while connected."""
     # Start the BLE advertising task in the background.
     asyncio.create_task(controller.advertise())
     connected = False
