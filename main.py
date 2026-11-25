@@ -21,37 +21,6 @@ button = Pin("GP18", Pin.IN, Pin.PULL_DOWN)
 button_power = Pin("GP19", Pin.OUT)
 button_power.value(1)
 
-"""
-lav_fart_led = Pin("GP10", Pin.OUT)
-høj_fart_led = Pin("GP11", Pin.OUT)
-venstre_drej_led = Pin("GP12", Pin.OUT)  
-højre_drej_led = Pin("GP13", Pin.OUT) 
-backwards_led = Pin("GP9", Pin.OUT) 
-
-alle_leds = [lav_fart_led, høj_fart_led, venstre_drej_led, højre_drej_led, backwards_led]
-
-for led in alle_leds:
-    led.value(0)  # Sluk alle LED'er ved opstart
-
-def led_status(turn, speed):
-    # Sluk alle LED'er først
-    for led in alle_leds:
-        led.value(0)
-
-    # Tænd de relevante LED'er baseret på turn og speed værdierne
-    if turn < -0.1:
-        højre_drej_led.value(1)
-    elif turn > 0.1:
-        venstre_drej_led.value(1)
-
-    if speed < -0.1:
-        backwards_led.value(1)
-    elif speed > 0.1:
-        if speed > 0.6:
-            høj_fart_led.value(1)
-        elif speed > 0.1:
-            lav_fart_led.value(1)"""
-
 running = True
 last_press_ms = 0
 
@@ -92,7 +61,7 @@ async def handle_message(message):
             robot.move_dist(1, "forward", 0.005)
         elif speed > 0.1:
             robot.move_dist(1, "forward", 0.01)
-    #led_status(turn, speed)  # Opdater LED-status baseret på turn og speed   
+        
         
 
 
