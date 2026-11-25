@@ -1,8 +1,9 @@
-from time import sleep
+from time import sleep, sleep_ms
 from sensor import Sensor
 from Differential_drive import differentieldrive
 from stepper_motor import StepperMotor
 from Navigation import Navigation
+from multiplexer_data import Multiplexer_data
 
 
 sensor1_pin = 28
@@ -49,15 +50,34 @@ rute = Navigation(14)
 
 
 
-for i in rute.rute3tilbage :
-    print(i)
-    robotfull.drive_to_junction(i, 0.005, robotmicro, ldrleft, ldrright)
+#for i in rute.rute3tilbage :
+#    print(i)
+#   robotfull.drive_to_junction(i, 0.005, robotmicro, ldrleft, ldrright)
     
 
 
 #sleep(2)
 #robotfull.turn_on_point_robot_angle(180, "left", 0.01)
 
+
+
+sleep_ms(2000)
+
+Bedre = Multiplexer_data()
+
+sleep_ms(100)
+
+while True:
+    liste = Bedre.bin_scan_all_sensors()
+    if liste[1] ==0 :
+        robotmicro.turn_curve_cm(1, "left", 0.004, 5)
+    elif liste[4] == 0:
+        robotmicro.turn_curve_cm(1, "right",0.004, 5)
+    elif liste[2] == 0:
+        robotmicro.turn_curve_cm(1, "left", 0.002, 2)
+    elif liste[3] == 0:
+        robotmicro.turn_curve_cm(1, "right", 0.002, 2)
+    robotmicro.move_dist(1, "forward", 0.002)
 
 
 
